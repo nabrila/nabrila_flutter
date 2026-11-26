@@ -1,0 +1,308 @@
+{
+  "format": "NBR1",
+  "version": 1,
+  "vectors": [
+    {
+      "name": "plain-json",
+      "description": "JSON without gzip, with the PNG. Byte-exact.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "ivB64url": "QEFCQ0RFRkdISUpL",
+      "flags": 0,
+      "payloadB64": "AAAD83sic2NoZW1hVmVyc2lvbiI6MSwiY2FwdHVyZWRBdCI6IjIwMjYtMTEtMjZUMTQ6MDM6MDcuMTIwWiIsIm5vdGUiOiJFbCBib3TDs24gUGFnYXIgbm8gcmVzcG9uZGUgZGVzcHXDqXMgZGUgZWxlZ2lyIGxhIHRhcmpldGEiLCJhcHAiOnsiYXBwTmFtZSI6IlRpZW5kYSBEZW1vIiwiYXBwVmVyc2lvbiI6IjIuNC4wIiwiYnVpbGROdW1iZXIiOiIxMTgiLCJmbHV0dGVyVmVyc2lvbiI6IjMuMzguMSIsInNka1ZlcnNpb24iOiIwLjEuMCIsImFjdGl2ZVJvdXRlIjoiL2NoZWNrb3V0In0sImRldmljZSI6eyJwbGF0Zm9ybSI6ImFuZHJvaWQiLCJvc1ZlcnNpb24iOiIxNSIsImxvZ2ljYWxXaWR0aCI6NDEyLCJsb2dpY2FsSGVpZ2h0Ijo5MTUsInBpeGVsUmF0aW8iOjIuNjI1LCJ0ZXh0U2NhbGVGYWN0b3IiOjEsImxvY2FsZSI6ImVzLUJPIn0sImV2ZW50cyI6W3sia2luZCI6Im5hdmlnYXRpb24iLCJ0TXMiOjAsImFjdGlvbiI6InB1c2giLCJmcm9tUm91dGUiOiIvY2FydCIsInRvUm91dGUiOiIvY2hlY2tvdXQifSx7ImtpbmQiOiJ0YXAiLCJ0TXMiOjE4NDAsInhOb3JtIjowLjUsInlOb3JtIjowLjYyLCJ0YXJnZXRIaW50IjoiVmlzYSDigKLigKLigKLigKIgNDI0MiJ9LHsia2luZCI6Imh0dHAiLCJ0TXMiOjIyMTAsIm1ldGhvZCI6IlBPU1QiLCJzYW5pdGl6ZWRVcmwiOiJodHRwczovL2FwaS5leGFtcGxlLmNvbS92MS9wYXltZW50cz90b2tlbj1bUkVEQUNURURdIiwic3RhdHVzQ29kZSI6NTAyLCJkdXJhdGlvbk1zIjoxMjkwLCJyZXFCeXRlcyI6MzEyLCJyZXNCeXRlcyI6NTh9LHsia2luZCI6InRhcCIsInRNcyI6MzYwNSwieE5vcm0iOjAuNSwieU5vcm0iOjAuOTEsInRhcmdldEhpbnQiOiJQYWdhciJ9LHsia2luZCI6ImxvZyIsInRNcyI6MzYxMSwibGV2ZWwiOiJlcnJvciIsIm1lc3NhZ2UiOiJQYXltZW50RXhjZXB0aW9uOiBnYXRld2F5IHRpbWVvdXQiLCJzdGFja1RyYWNlIjoiIzAgUGF5bWVudFNlcnZpY2UucGF5IChwYWNrYWdlOnNob3AvcGF5bWVudC5kYXJ0Ojg4OjcpIn1dfYlQTkcNChoKAAAADUlIRFIAAAABAAAAAQgGAAAAHxXEiQAAAA1JREFUeNpjZPjPUA8AA4YBgFo0fWsAAAAASUVORK5CYII=",
+      "envelopeB64": "TkJSMQEAQEFCQ0RFRkdISUpLBfzpdm2FOfWtpK9pO/7FoyefDfcJJz6qlsIp2S1AMKeP95ZR/o+L0QgzGXuSNAf4ZbwH7QQpgDTNROCOANmiFl7Sw0D+4MiUuNrvj1Ck7aW4Pr0vBhwtwcRV9LgU+d06oSgBg0GZoTi5pjPVOAofl1AFp+LOcpVSOVHnXB3/8kKPD6rjBgd3wzEciyRnRYn9/sm3HB4AdzX7Y4b5Anqu63ffDqj2UOo9xWNx99k5GmzEZKsZkI1YpNia1eBIsjFAwbH0f5l50FE7sayIEKuHAJP6AQtwKXW6THw10stpV1oA1245EWSzoOzwvhBxIhPcJGQSho+FKN4KyVrIgKaDQyahIE+zXXObIOiKe9G2hjaI1LjA4Kf7THLVQKNSD3FqkmMcO8+JMV/DC2si2VSBy4kji1BzfM85ug2QrwWyfMq18L41ZIBqvvcRAZ5BdToFgN44gTdLnOluxrTuxbkxoANjXsqC4a9sPjWbmjJXWluVcwmeojl+H507MHkjWJFzJb52fSPLxgtywXE+gL7QIXi2+qRpUbDUlqvaWzzDBvBN1Pp7MDg+1eFzZEypSkIy0Tb7TF2nVFTlk/3TQjqjmUoVoiJJ6+eWqyOmFLNUfy4DgR1B6rZwTlpa06Frn4IJNSA1XTIa2LuuY8r85kGOh8fOSsVZJ9ildUIdVVFZ5Hj9QIsdJZstqgGJLMw9MK1bCcmUTIFNiIHcIX5ZHtZKGY/2U32EOOF5lNJcvHUFqqqQ46BECD+9QJgHRmSEZsv1hWVPwDybyCTB7nkCczAZmpHpve+XkkgDCI2sd2w4Ofa2mh+r+Islwg2VkEENgQOrlcDmxWE5zEli+7WOVbRkaTQgZ+8THGYBIewQlHoPX+srwySh+WLG25etbw9CIiwfmCtAD20OVKCi2l7QYgkTiE44BvxKw741XfsWv5cHe2/VSOgOcqF1nMPFcSpPwtmCC6LePRR6umht9KzTGedcOifJZdHi8RNUxyDbUKTbXMfIub0wyEsMxzkqITh1lrvXR92DSmM71P/wlPPNzpBAE0M4ghjnW/F+TSuHUSXspl+m8A8GzHAD/wCyp9vPJt1l4fGNsoKA+JNbjMdGoLWuVzcA7Mly2GNvKqgg1aoUeLv/GFvDWm4z8YYBr/eEQQ44odSFUkL/GJ+kS3qsobXpafnw141am4AULpumxNDHm0Ov83inbxHc8TQWfNM5PAiEY/rpliBjjD77NXaNe4pPKTrAbGhCXeXZFzS3sBwndlY8pGeVESM8vsAGHOn0LRqZlRJJ8DSkRyJ83pK4YTEDTWNp/qb/djcThAk/LKwTW0lcLT4cgeIo4+VPJB0BBJw4AuKwi3C8eN2yqi7UjmQzOIKmx7HMrw7kQAWKsMne5Ft32xmv++4QXO/79PxGNtjxHkI/5mT7QzNkWfk8RZkGsnRZPOLevnmY4KvZQGe+H61FcsAZjrBHo2K81tWn",
+      "expect": {
+        "ok": true,
+        "manifest": {
+          "schemaVersion": 1,
+          "capturedAt": "2026-11-26T14:03:07.120Z",
+          "note": "El botón Pagar no responde después de elegir la tarjeta",
+          "app": {
+            "appName": "Tienda Demo",
+            "appVersion": "2.4.0",
+            "buildNumber": "118",
+            "flutterVersion": "3.38.1",
+            "sdkVersion": "0.1.0",
+            "activeRoute": "/checkout"
+          },
+          "device": {
+            "platform": "android",
+            "osVersion": "15",
+            "logicalWidth": 412,
+            "logicalHeight": 915,
+            "pixelRatio": 2.625,
+            "textScaleFactor": 1,
+            "locale": "es-BO"
+          },
+          "events": [
+            {
+              "kind": "navigation",
+              "tMs": 0,
+              "action": "push",
+              "fromRoute": "/cart",
+              "toRoute": "/checkout"
+            },
+            {
+              "kind": "tap",
+              "tMs": 1840,
+              "xNorm": 0.5,
+              "yNorm": 0.62,
+              "targetHint": "Visa •••• 4242"
+            },
+            {
+              "kind": "http",
+              "tMs": 2210,
+              "method": "POST",
+              "sanitizedUrl": "https://api.example.com/v1/payments?token=[REDACTED]",
+              "statusCode": 502,
+              "durationMs": 1290,
+              "reqBytes": 312,
+              "resBytes": 58
+            },
+            {
+              "kind": "tap",
+              "tMs": 3605,
+              "xNorm": 0.5,
+              "yNorm": 0.91,
+              "targetHint": "Pagar"
+            },
+            {
+              "kind": "log",
+              "tMs": 3611,
+              "level": "error",
+              "message": "PaymentException: gateway timeout",
+              "stackTrace": "#0 PaymentService.pay (package:shop/payment.dart:88:7)"
+            }
+          ]
+        },
+        "imageB64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+      }
+    },
+    {
+      "name": "gzip-json",
+      "description": "JSON compressed with gzip (flag bit 0), with the PNG.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQEBUFFSU1RVVldYWVpbcW43YMg8T5hk9evvcxV+scroaP4nnnmnxCtKRHFaSrSgU99b0O00sLKdhUQGmAhI8gQ0FYZrjFnhrV3Am1RLY6DiCKHoR2wny4j6rSyIqFFluEy8S5bLnHbsuDxptlkPtJOTXkGPmT3MNRMuFzviKs2PA5pZUjPuJRxGY5QS/BELP9o7RgeBjnV5V1Txr8SxW/LUF240aHVtnY0TiM8MRO0v0UpGJYIKplsx++yTnesCO7VYy3sfuEGrP8toxeQC5RtrMtKyy1emD3MDAXVPanNWPTu2aEt6bqj1aOaFcqlJaqGiGVhaGAiVV8uPABvIZQhGAV4UWNqlvQDwwqlmlM9PCugJS+59n3mT6wBMDuLafYi4f79+FvFb8WvDfTRAsreZPYEFq3caCbvLi1WetLeYwTRLerh6VuZC+3VeIhGpVdEjRuzYKnuVGXMGg8/sWqnblsa0LkPWzuJ5bskanf0GXF6Ey3BjMtcVjsoDrmWwbtOHnbmFY3S9j8kRfxxQpH98tDpYUhsf0IL4f+0nzA0KcVhmZzGP6edYpONyH6U94qFGhsVlS3Sr/+WbU4keOwrGGKsO6sZZuyOTYuGu4HLQNOkpknRtPc6kAA+oJduOnXbmaDcyRGsR9mJZlqYP3e+EUXiUOKXRqMsWMkO+yafqFm9lOJB7/QPTrFY4gI8YODR1KatKVf1wiaMoR3lCboA6BilRka1Wkfr88q0NTjnIeVK5lb6NVVvRRIFI/tqq3F4eoIy6oCoW1X1H0YJX4x8p/HZV2tWdwPXfDetO7JPFgDy2CtEvGbAKXqIYAXxPB+NyCpupfN/Zl7K2qk13EslFxR8buSPdGIXAodVhSXk9FwVAGDsJy4A1SLefAfEkJ0F+p/ZgjbqsOkzNCbkzyzBXxvQzVHKZ5UdJMhZWkNHSGV0CGzK8u0BXrmCe4b4YO0rVgFM9",
+      "expect": {
+        "ok": true,
+        "manifest": {
+          "schemaVersion": 1,
+          "capturedAt": "2026-11-26T14:03:07.120Z",
+          "note": "El botón Pagar no responde después de elegir la tarjeta",
+          "app": {
+            "appName": "Tienda Demo",
+            "appVersion": "2.4.0",
+            "buildNumber": "118",
+            "flutterVersion": "3.38.1",
+            "sdkVersion": "0.1.0",
+            "activeRoute": "/checkout"
+          },
+          "device": {
+            "platform": "android",
+            "osVersion": "15",
+            "logicalWidth": 412,
+            "logicalHeight": 915,
+            "pixelRatio": 2.625,
+            "textScaleFactor": 1,
+            "locale": "es-BO"
+          },
+          "events": [
+            {
+              "kind": "navigation",
+              "tMs": 0,
+              "action": "push",
+              "fromRoute": "/cart",
+              "toRoute": "/checkout"
+            },
+            {
+              "kind": "tap",
+              "tMs": 1840,
+              "xNorm": 0.5,
+              "yNorm": 0.62,
+              "targetHint": "Visa •••• 4242"
+            },
+            {
+              "kind": "http",
+              "tMs": 2210,
+              "method": "POST",
+              "sanitizedUrl": "https://api.example.com/v1/payments?token=[REDACTED]",
+              "statusCode": 502,
+              "durationMs": 1290,
+              "reqBytes": 312,
+              "resBytes": 58
+            },
+            {
+              "kind": "tap",
+              "tMs": 3605,
+              "xNorm": 0.5,
+              "yNorm": 0.91,
+              "targetHint": "Pagar"
+            },
+            {
+              "kind": "log",
+              "tMs": 3611,
+              "level": "error",
+              "message": "PaymentException: gateway timeout",
+              "stackTrace": "#0 PaymentService.pay (package:shop/payment.dart:88:7)"
+            }
+          ]
+        },
+        "imageB64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+      }
+    },
+    {
+      "name": "no-image",
+      "description": "JSON only: the viewer shows the report without a screenshot. Byte-exact.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "ivB64url": "YGFiY2RlZmdoaWpr",
+      "flags": 0,
+      "payloadB64": "AAAD83sic2NoZW1hVmVyc2lvbiI6MSwiY2FwdHVyZWRBdCI6IjIwMjYtMTEtMjZUMTQ6MDM6MDcuMTIwWiIsIm5vdGUiOiJFbCBib3TDs24gUGFnYXIgbm8gcmVzcG9uZGUgZGVzcHXDqXMgZGUgZWxlZ2lyIGxhIHRhcmpldGEiLCJhcHAiOnsiYXBwTmFtZSI6IlRpZW5kYSBEZW1vIiwiYXBwVmVyc2lvbiI6IjIuNC4wIiwiYnVpbGROdW1iZXIiOiIxMTgiLCJmbHV0dGVyVmVyc2lvbiI6IjMuMzguMSIsInNka1ZlcnNpb24iOiIwLjEuMCIsImFjdGl2ZVJvdXRlIjoiL2NoZWNrb3V0In0sImRldmljZSI6eyJwbGF0Zm9ybSI6ImFuZHJvaWQiLCJvc1ZlcnNpb24iOiIxNSIsImxvZ2ljYWxXaWR0aCI6NDEyLCJsb2dpY2FsSGVpZ2h0Ijo5MTUsInBpeGVsUmF0aW8iOjIuNjI1LCJ0ZXh0U2NhbGVGYWN0b3IiOjEsImxvY2FsZSI6ImVzLUJPIn0sImV2ZW50cyI6W3sia2luZCI6Im5hdmlnYXRpb24iLCJ0TXMiOjAsImFjdGlvbiI6InB1c2giLCJmcm9tUm91dGUiOiIvY2FydCIsInRvUm91dGUiOiIvY2hlY2tvdXQifSx7ImtpbmQiOiJ0YXAiLCJ0TXMiOjE4NDAsInhOb3JtIjowLjUsInlOb3JtIjowLjYyLCJ0YXJnZXRIaW50IjoiVmlzYSDigKLigKLigKLigKIgNDI0MiJ9LHsia2luZCI6Imh0dHAiLCJ0TXMiOjIyMTAsIm1ldGhvZCI6IlBPU1QiLCJzYW5pdGl6ZWRVcmwiOiJodHRwczovL2FwaS5leGFtcGxlLmNvbS92MS9wYXltZW50cz90b2tlbj1bUkVEQUNURURdIiwic3RhdHVzQ29kZSI6NTAyLCJkdXJhdGlvbk1zIjoxMjkwLCJyZXFCeXRlcyI6MzEyLCJyZXNCeXRlcyI6NTh9LHsia2luZCI6InRhcCIsInRNcyI6MzYwNSwieE5vcm0iOjAuNSwieU5vcm0iOjAuOTEsInRhcmdldEhpbnQiOiJQYWdhciJ9LHsia2luZCI6ImxvZyIsInRNcyI6MzYxMSwibGV2ZWwiOiJlcnJvciIsIm1lc3NhZ2UiOiJQYXltZW50RXhjZXB0aW9uOiBnYXRld2F5IHRpbWVvdXQiLCJzdGFja1RyYWNlIjoiIzAgUGF5bWVudFNlcnZpY2UucGF5IChwYWNrYWdlOnNob3AvcGF5bWVudC5kYXJ0Ojg4OjcpIn1dfQ==",
+      "envelopeB64": "TkJSMQEAYGFiY2RlZmdoaWprpk1QlbWnxk8IZwv97xxuUep9at9R9iC0MzITti2Z0cLFm57BE0xrEysD2LvBc+MUYHBopJd2kljOqDOb2EAXxcO3Vu8L770wdCeffo2sdQr8Tn39Th2XNM/FyM0I86u8yIkAjsNa41V1kP9Z7EeKndfJNIAuOnyBPHktkVR8KjPxyp0Nu37oSye42EfCaOWhqmU56sTAOsD/XdqWEBy6Ekbf5fDQK1kNfHidCxjPkxhW8AaIq220FQTlOPZrkyeOM4PZvigAkz/jjpxpguIpk460XFLqjCCzDeBx8iWbOhJFiekaKNqXZyIcu/kPJmbUGHDwue8fIHyFPwDu6lfq4rFGlaxM4nJsFqEMDSDon3dKAWvGyB/BMPyTLvNK+FGkoFjhM/55MaEYl9OSXmkrAgvnIFtvUSchVo4/4zbiQ3MN0PFvCy+cJxl6ZWyYqDw9xrbaqGmyca1cMafLKPHx34t+15MSOehLQ3U3QaxgjtgYMxCKZCwN63gTGOb/Zcil6swo49D4xMUJMGMKUXElt3qblfNpXs9NjUE8uMeodxnQdDsIAz0LLc/cY1uScpsEiAKZ+98tAAA+qfLOwm1mMt8mYl81s7qlb0LqBK/LQtt9iUoqdwToHOFQXpZzxhwZzqEVhd/0o81uHahyKn/SZWTaMCcnbKLjR+N1MB8SmSpFniv1QFsrmvikyDLI+WXLK0JvcQuiDQUv0HzWeMhRkGk7IBveFI8hR1RnIdJL9Rzi2L/pvvXvBX1WwKZ/5RBpoFTLgUPgZTMbrC8/LnuBIdqPY7yMdizmxXMhl7iVKRxh5ZHBH2WYhe9BKJWYgqwUhKdfXlPBepUAH7jDF8qOx5kXTGOPxpwggkXzt0N2hc9DJ+7z7dLJxm53s/7gFCfr2hBGuT6wPUjeLXPDjVcv4Cb5DNK18mu1KGT+o6THYsHIqmy4Pn5mprzya6zptNRgaxR0wwbPL/4pm5z9wpaXBqZ0bGofly/tQE7YGrnQWEVW4+pmfOLmcTZjxcQG1/V71QfI8fXs3WjDTAI7aHSEhJCfP+vSd1PCilPP1ehfvqOiXeICVpFOCnDUVP963Ej3QNGjEJSWFJkMsb2W+N9VeAzIAWiEhD4WFFVPHAt2QcGERvgwoUCOQNbjUK13BEz279Vuxpg99IlJD9X7Qh7vB165GtQVkEHcwldyq8dLaasjHY/kjrufSB/pvKQARtUeAbNWMt4NiCX0DLWq/R6/RPlO0NcZ2tGgjJa4+Ni4iyVJBkX4Nx1/oWNOMWgcicgm1mDlGyZVqYL3Wv7Bz10MpTrcT42NHRaCknXxhBViXlIsuGFiAjJN7oila5of0DcertDo5a9pjle4/MxEY4TaxJTSGewDT8Q=",
+      "expect": {
+        "ok": true,
+        "manifest": {
+          "schemaVersion": 1,
+          "capturedAt": "2026-11-26T14:03:07.120Z",
+          "note": "El botón Pagar no responde después de elegir la tarjeta",
+          "app": {
+            "appName": "Tienda Demo",
+            "appVersion": "2.4.0",
+            "buildNumber": "118",
+            "flutterVersion": "3.38.1",
+            "sdkVersion": "0.1.0",
+            "activeRoute": "/checkout"
+          },
+          "device": {
+            "platform": "android",
+            "osVersion": "15",
+            "logicalWidth": 412,
+            "logicalHeight": 915,
+            "pixelRatio": 2.625,
+            "textScaleFactor": 1,
+            "locale": "es-BO"
+          },
+          "events": [
+            {
+              "kind": "navigation",
+              "tMs": 0,
+              "action": "push",
+              "fromRoute": "/cart",
+              "toRoute": "/checkout"
+            },
+            {
+              "kind": "tap",
+              "tMs": 1840,
+              "xNorm": 0.5,
+              "yNorm": 0.62,
+              "targetHint": "Visa •••• 4242"
+            },
+            {
+              "kind": "http",
+              "tMs": 2210,
+              "method": "POST",
+              "sanitizedUrl": "https://api.example.com/v1/payments?token=[REDACTED]",
+              "statusCode": 502,
+              "durationMs": 1290,
+              "reqBytes": 312,
+              "resBytes": 58
+            },
+            {
+              "kind": "tap",
+              "tMs": 3605,
+              "xNorm": 0.5,
+              "yNorm": 0.91,
+              "targetHint": "Pagar"
+            },
+            {
+              "kind": "log",
+              "tMs": 3611,
+              "level": "error",
+              "message": "PaymentException: gateway timeout",
+              "stackTrace": "#0 PaymentService.pay (package:shop/payment.dart:88:7)"
+            }
+          ]
+        },
+        "imageB64": null
+      }
+    },
+    {
+      "name": "bad-magic",
+      "description": "First byte changed: not an NBR1 envelope.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "WEJSMQEAcHFyc3R1dnd4eXp7SJ77excvla8LobXpBgmaDPk3vZ4C4OJPyssLpBrAMcT6cTh1t0+nsJAUG+M5bAX6odimStjtznuu7Cc4AMnOYinVbBkHZ0UprnGggSTjrSluuDgaM9Nm2uEp0iPIwoFnafzQsO87PBMbCWRZ8p0tNBZC7TvameVkLxxbffF7XT8tZCh+nImL+dIPJDF49xVAP9PK+MNUcxN0Rn9YrU3XyEDnfiqq2NOrmNTWYs1YlenJ/t+WMWzQTrcdOglwJxsCdVCwMibawKnT1z7CeMcGh5rx7Ka9dFMFaVIcK9MUJmXLyDQwykJe1dRhRlim+OnOUxxKY8kIRi3wa2lrmI+7LoHqywpllZDgyF6B0k/mGZDfvishn8o8IJDbbpJUU9tnPANModiXZSj/r8XyfWgKCr8XbnzFYjZDQy15CY09qomSZK0LQtSzGjMi8s44/n8160v5lCdQcDSTDdTdHZNKs6vI6ABE1DkeiRmxwEmfqI+6fZOrDJ0H4MKXPrMFMl3xeRDX7ZVWuyoXNKU+MccWWl9+CtfXtI2PGTgiT//0Y/PfQMh+PB5fGthZIg7NAtkM0ebUtjHSyStnBDWatsA9NxRp9QIo7lbr9/naipNkMK+5KgFgNfUavUNXJPxfwfub/b8H1gYHMncqxBopA4JoOn9kHMD3yncEWnt+0YvFWIEByFhK3/8psSNpPNRzCdUeJMjxr4GO0fUQ6bNN7o88UuYHoQjsHf4y6qkAIP+864iTBsuShgJqapi+ANhu6HHBpRywdHydiL4CJk0tFj64h5CUGqLBrV/7WzMMbldjf5GjdyOK32yyaNpnBU6rUWB/vTevWgcqOTSlugrPUiCJ0BtI1qXrpSQmPNHSdVz0mECI4krkYlVfBaJ3z+UU8V+VDIdoD+KsJ+nNExpboJdX+TZYBcCzxRBO/suPiO4hqLFbj7Mtumse8BYMkoDgpl/vrfVP6NLl4fYuw11R7qswg6pkABHkgPlVFCpse5zEyMg4O1UdFLb2F/TdJPJfnqag6gH8H+oJL24Bvi06z9dm9gClGEPWpG+iyj/Z4Bv9hOPgfsKVaaOMEvcX+TDdYPVl7f8C4aCeOBL713i2RoYEezbWdkxgKKD2xFNV378chmuKQZpuDYVbgTNHUD0wC7wW/dpFsu6G4YQrpDf06hf2uLih6M2PCjplGASkUDHCRa4aMUDSBqdTDRlffG2wh4mjTBVDQU9egiFSjTC06bh8aDd9TiEn7eUNaVdaNZzExn9ZpHJpDRL/KUiYY4ZTrxuNRDUNZAedpTgI8xPiajgxLDSJfKw3gZZJWtAStjwJgdj/up7nUlGc7grcb0h7icy7S2n3aHCYnRYMyYpGVH1wKbdp3Xu6g++6NSAoMeKVqRBIGlqqf97tIJOpotRnE/iSqG5SFMAyupZYrGboOsebNvFY9nKbnpj7Sos9yCxrpCn6yAmsarf+R+bEhcZK",
+      "expect": {
+        "ok": false,
+        "problem": "envelope"
+      }
+    },
+    {
+      "name": "bad-version",
+      "description": "Version byte 0x02: unknown version.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQIAcXJzdHV2d3h5ent86FyDJsTfdsm5K5aX/qdVWaUI9r0JLlfHJStE6HHlRRVQP4yVQrlL7A0Zjurpj0wZ/A/bblDNcQZSjcMSgF2ywYRz85IjS6q94Q9nj/sGs7t0zkX1qG6pJWR3FBS5kOPHXEz3TM1hl4RwfXLCBYKx04Tw532Pk7hw6SdqDnw+kz0k2FN9gFLCDUvkie/sbvrmOSzqCuQ6zrUcPwM8lDUc5YQH3AQfrWCRijdSheCxEkmbFPcJAV6Wp6cZRfQFiDS4J5NzsiqHqWa6BZqykT1iwyTwQmlktLv2/GX1rESD2+7xzUg3xvNTxkScXy0iKpkHKpvey7HTa5alPxA7g7nH+5av/ugT6HSfshHomE80lzjWpqsdJ7eFKCCd6kDPaulrii7flng7LDWHLXtS5BA2tI6/4Arb+EjOuDEjBu3mCgUn6kbp/436sDwPOoXyJwPWI7WDA4/kHMmyCnn/yAyf9s2z3qBKu/A7h4XVJknbbA8U27xNUg0XZZq/G7dZ1yBrGehvZStwROEQv2pJJh3/0tuA/H9pSYFJCr+0xlUpt7VsNZCLnR7wT2Nkwi76EJJvt7EuzQyHchdgwgRvEgktTM4IipI3UCol7U/b4YGM3Nxfhfd1X4TtNHIvnz4SAVEwjCSlgZbeZhHFMiiV/Iy107FTLS54wm5aCJEz3ZCKLkXMR2MIswMXy1vXqEJcq+L1S9dV6J4Xsd2AzPQJF9OlCrqpn4CMfHkNGKTHJfetdQjHEtfId8FYmTA5l9cgMqTI/MNM0yM8pR9Z4ynl+8dSn5EcJLFbCISTzsWQdhkCwIVJ00xVfx/OxOe9W9kOFWX2e/g1E9vxhTGEpnUKJQ7i8IOO7LIWHBABW3nsxpdJVXnXZWkx1rA8YT412PRRDXDAJmYkELZoSvtHC+p2+PHn2wusrsZYE/i+qgSDEVYegxpReHTpGfMrQpFgWQ/QnTCWjthFQf68rGZPv9S1l42+gwseoZR2tDtyUxaANvovsDdLmGS0nZo5mwVn1UIUIFWgmW7F+rd0mxhZkq8HgoQJMKUkuGGoNd6but47QBvkqAKSj0/Jdszhs6cbcgoGzU1DGQ0tBhnT+M+0B47wRRb/lnFwX+uZjyZcNgHZy+1kb+l9gnRtC82yNZDUstz/lqo/EMLKo2wfa31JoujfBWsNpircuNombHV4cWzYQdq/behO6km3I6svpVUCgeX/bVCfGIdFDBbp7WURrWr6JpsMTqoGQDAWNct2IcXW21Gl53t2T5QUioncukWwnsbPtJdkSOvn39p3WYJ4NMvN23wcsbQ7QChCBeAi+F6A9R56P0ncrHMsuZo0PxoinnOkKUjNvseypExphGDmgvkBoKu8htVwDarI2pd4b0jU3hahaw+9lvaCt00SsHTobO2d3FFS0onMBUr540Ql3goHzQCHUj3EEhY/KPRUSb9UsKk7Op4ODmO5KbRyPwmwJJCi",
+      "expect": {
+        "ok": false,
+        "problem": "envelope"
+      }
+    },
+    {
+      "name": "reserved-flag",
+      "description": "Flag bit 1 set: reserved bits must be zero.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQECcnN0dXZ3eHl6e3x9dfq2H1iKHWw6x6mn8nyPdCXNyZCdLNjfZyx37wuO4AzX2L1ORoCHl8ojwxa9DWZlld5kdJ+4+o6RzjAni1vys8zdBiZjBFYcLL6oZEttxeNnQfLTuImH8dJiDYnuT31wXIJpzaZ2uDKca7h00+BdSzehOpnUW/6o4VcxM/3yfQf6tT4Z7/bu13YXVbgKu3KJ4IziINms1NFlqlFNcspu4kpugYFNKPRJ1A2YZ8xZ1H0pEwJ68llJBDXakMY2QERr5J6vLhhDr4qmzH8rWwgRnwSYqW2oNcjG56I/WyCbnpoayAFUpfRahYmW7HfUZWk7QOEiorCYnW5eZT6b1mdXHmgBQAB/iJwAYAr/6hjwmifPYzyXDeK9IpohKMg91yq+SyBK51a9wDoP6ZV8/+2MeLZyQnNXvkHXXaHbJE/QKqd2gUWUx/Xhcufj55gQOTmLgxrahaaCVRBfgk5js449CauV71OoNsgczFfjFXnktUrI909OLtx/yJUczwcwZHGuhvV0Br/I5WP5U5VXcszS1izap4FXHADMFNWa4qknNxfeT6FqSO5EaRxuOUVbAZiQY5qG7VSaX3fkH5lOW52YsSeFY0BPVvMxCX1l89aiECdUWxTl7BVx1mkY0n+LX6EKUUPqzvtLqTMUwcs5SlDZClq+3M0m6WdKEJWq5mtQxtKERJi/Mf54tZsabq/3UwDsBuARzLzJgyKnUs7bIbgOzejXDxotFoVjv2wT2u9WAKtbQUIBqCfxL5mgB2mfwAqrnrdA3OnJWlENdkMde/RKdfo+snDqZxOB0/XRmubcGiDGEBFpv0Jw3VkDGPQzWKZ7p/RXT0qaDX3qRS1iNbrYMgFV6BAadMUcR/v6K7GFbDWrW1V05mgTAPWkjzd2AvqDhxfhxMVVKwkN4i9iuonwDPIITIv4RgyDJQHJeFh3EC54yjKB9gE3oB4CD1u30CqwR6PhXJpq+NlMWMEEJpWGpV/vh4OD8flGHv2JokNVe8XO5hXT67ThcPm0On9dEMzrb9mSFBSm334Bz+S2a7kgbf0WC3Qy0DQbDxCFEAS1JD2EUPV5MOEest0WiEvCw0axaVdM6agm2UXAIRotDhVFmrfB3BTkW9QvWAma2c9XaezTSNZOfnEzhbstfO8sYby7Ag+1/m7ajNMlJYJA4SpyM8fjtB8Tzv0+0cqtDsMB2NXHBw8OYfeoMhWyQ3PbZIJui/GOPVgBBuADFpOo28NsBtW/4sdV/Ocp42MVX0+x1htG8vTcHFj42kbSmkZw9LQn8r693XElrr4ggd3Nl2DC6dHbdaWMpagfh57vb90Z/ZXlMmg3DcATg0pedMVZ5XwTlJDx/HerhArqPoi4Rp3w4lpBbgEEcjTUq2bOdFOx2n9IV6d2kjdlKmWXdOlRFMXM9E99tCLwTRWRM7JM1RmrWCiiu09tBPrq9wgFAKzr7/iy5vVaSWimRX/v01zo",
+      "expect": {
+        "ok": false,
+        "problem": "envelope"
+      }
+    },
+    {
+      "name": "aad-tampered",
+      "description": "gzip flag flipped after sealing: the AAD no longer matches.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQEBc3R1dnd4eXp7fH1+2MR/gUePZEpmwI++jMV5Z3uYuwVM1Md1JmlejrRLR4AvOhlEED+t7fZDY+r7CgNGfCqr2PXqSG6AYJvBt0X/XKFA9M9uJxwIlQU8b+wyO2v3GGw2eV1PoBqMmsQK5gjgj7EIv5Cj+LNBQMhhBfw7Pjs6mdAZF8GsGKszbGrmRKbavi9Vap4vwlniy8MBJx/FvJ3tQOLuksWBIXz+LEJJ2GMisozlRLjGG6d+EmkAq9Ej1skp/VovFdqkIlWMcPs2WhLlSEuouvliKq1BHsZvok2SRwNheuvcUlDqxVMZLFTkJki3D8JQ6D2h2S7zZTDQ685MkedKCCcUrGp07dEPHV1u1kNzrYRrtjg/iUKatiiAhcLpLluJIv4N3B7Bfih/15czcbnOayAiW72NAfLoL+AmHyq6KTvpIkhErERdNTHVrJ18jlKRfE85XNX7h0k7BRYflQkAcQVkPmGS0yPxui5yEAWw2mod/8DJK9xe7cvcnoIYO+uMkearHujuEroORXmPVp4QKdYOARlJc26I4F5UDrzokZrXwg7fXjXKh2vWMkzFPMjpXp/dIf+XPb9elQPAV7ufsC3XrSwDCqdJj2hkCguvDsfg7bd8cZ1W0QFT0zw9By54NpcTcvHtgvRRWpVTxKrYV5N3xCEyUukkKSUS5/ITkjcjDEepLgDNDNqUK5hVjUpzDR0ocuUQUBRCS9YY1F2hNBjpdspcv8GhCxjEAdaw008pUDYBtmDoC+Fv7eYT+jq+8+/uwdZt2iPnH8a+Sy8RyrdjzsEwkH2mJtkDjLyjGcNkWepMvo9XoWeIzKSKl+mnxvrKwojVaP0Zj8MF8tGjmqo/DXC1lgVQOj+Z39SPb86aFQh0SEiBFld2GQDHWb+WMvTHhXJIXY4PsmZYHeW92Ld0L2MTkbkROA+uX0L7D7h9FcOHXclk8TRyJMDl+tuhvHQOxu2VdOs/Ul+0KIpSK1HPek2yoxqgUm7qzo9RuEOIkpLB1RUxyVUjTdBGdGNfeKz1AnYPOGywmQEVf5eiGKI3Twrde5zfdcJdReWRLQqRBeNfyLMlmEdXIOXc6QGpF3tz+QmGTE5O4QZujoR3BzNnglpbAmTUVtn/SOQzMDEvSuDLo+QhGPn7eVl3QXTMs2nXAkaHlz0YA7MDNMG0CMdTuz9oBJgGzc1hntdabPJFMZxqnoRaMg5BKBJqXpvUwfVGcqRvf6N2w8VeuVBtf6CHOVjCyVcKswi0YA2IJ7aGvIEs15pKsYWiIorqn69v+7AHhtJlpReFqa1AIR68vCcYBEJrLnu7zpBRGNYmSyHT5SSsPxOL5Aa+BFa9oc4yAV5Lmx7R12tZC0WaE2idEuUkBkDq7DCdq6OHGV3/XkjGowBT5cJapb0LsrOtMwrik3OpH4ryVgmKArLXVCv0Xmc9MDwj8vWU3cqz4aHV9iqMDY4hrIg1x70y8QIC6apm64P9tO2u",
+      "expect": {
+        "ok": false,
+        "problem": "decrypt"
+      }
+    },
+    {
+      "name": "tag-tampered",
+      "description": "Last byte of the GCM tag flipped.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQEAdHV2d3h5ent8fX5/OTyh6ft2QfeJZlp3F0tCRkgYndAFjA55voX/NEhhMlivwC3oH0iVKB63Gn84v0DsykC4EnlPo7y4NgHcI8IQVSoth+2ws6pPqUmE7Ecpfu8yV1zOgAZyXTA+Zurk0VnPQUdE352xvPsTTDRnIUhOMteBcDD0Xh9TfXEXHVzJ5KmyghABZ84mi27yH88ydAUNXaJ9PJlzKfoh2Q9u8pjsC5CEhmUgbIztm1aw0GGTZ/LDm/MzfVOS6iRy81zzlfn0nPealZCP3MiIGItTwbWBiqhS6lCUyILvTnaKZdR1KGm0uOOi6Mb1aVC22xaoJTOHcriUZJblxA3I9AOpteoyx/tiXKQ3xaJJq9YkSZ6X5vzTOmNCModkq1Sag+Pi7CGwITctoaaGDmCVB45whqUl4l14LhlEL8+8EAfhXVJzwCWeBwnRHRZeH8ijNoNz6v72z2tYptczLTzqkdPBSalMbFrNGeOeREWoIU0UU1zJJVsd/FYq9CZqiysfirpNHr5kBT2jVwxHy9OfuiF0ABWye7lrpsRlAuOStdYKvdy9AUfqQsUON8nPjXg3j3iV9+vofwRorSaWNDnzWvglUrRG4uZ5dl/AvLB/4pViQwnfaNHbjsLfW1L2px0iOnCFGDmv1W5NOZnU9aMocafXDuJw8gNto3HGQeVIFXFE/WS6aUGtZFdFB5MwHWFqj5JHu58uzEZKzMGCHDVJGj+j5bQ2bOa+d0ZeTMXp3tBAjKYrzSO78VHtjZ0bHiHLFARYIDuUcqDM/RKbeIWQ+zAoA/Q/G25Udj5m4Jan2khmDVT4dImbvrpODzRUPcCwfdzhjeC81zq+aZd50aovDJv6/en9irKObfbZZUYKBrGIUEQiaXk3uYJXR08o3NKhEyyrJeXuJdiWQcmQLiVwpPxTS8PKuz6oeGs8q9/iCPNqvMhFP15M3YzqKVyDMAAfsJQGkf2KlUoRwuJRVg+mX2/Fs0fWUU7stQbT6I1PjEM8oiE/bUGYMtokt92rY0tEm5cbMM4diJGsTAN0bLpOlZUUQhY5zXcApzao5xI2cK6s7x4lIbIpDZMenXwZ1HqhG7vbw3a5+MQ0OfUiXEvELaY3f9N6AnYBv4Guf5D4MdcXNcEx2kIX4W/GGrD0sThgKYIei1ErJzaVRq2rdS71dbMNjvfslJNnFSiiEWe+lBp5eAGq/Fg4E2kTuLAXva0KV4eTC9SiamOjuDHeFiIGzLkYWkempiKq4y0m2jljfgiK3ah12+6Xy5dCwYCcJzOxdCNDtcHsXjOlZJnt+ARPvfouOyad2LM8t9cpeWTzT03vGPhYCP7ixWb/LhUp1bXB9Ont/tQ+a327Lph1ezWIqQHPwXrcwHucOXnjW0IEjqujdo9ZQSHVGADUHWXcp3Fgb9VY7bFiF6EwBgQVfV4PKyQBOHG3qG+eIxfayriitZKrgmCVeC87zhTobdgCud1t0z1f",
+      "expect": {
+        "ok": false,
+        "problem": "decrypt"
+      }
+    },
+    {
+      "name": "wrong-key",
+      "description": "Sealed with another key.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQEAdXZ3eHl6e3x9fn+AYyFxbvZytJLKQ+ILM4uoqHmJqhjgT65/YXX5tgRoXRLhgfRDYl2odD9pC8jg8FtyuGNThuGo59Vu2tcruXlqekrJZaMC8KbEMRXd8G9ZXv3zQwVS8xH/Gg1VnoSblJUq4eJdxnM0XyqNEiV95ybpHk/8sgxvXulNoR6pRBaWh/spQrHvVWSYTp+cPF195H+oLO7T7ZzDsPmSW3xZDU3qEXgPjIPDKbfjqqMqS/44czsCRYTXA4AnQH5Lora9qxOhDDOyVhe2KShGGfF362xEU8FCsWChtG57jPmLe/m/fNR/ekKmvPdKhjEHB/Rl7pCXxUPHa/39udLgHuC3yPedoWVoOvooixu1wM0ctRkODsuS0t1Q217tNwySpOkZz8Q352TfFX8OmmJJvfFLpjz3uNWz5g8eWGHEeyVZausprpY+l6jH9BYhl0ZErx1FPUeZizmwK94YnmPErq2fAQ13osPzryt9zGVQzG4BdHkfyuEGcICCkJLpTmOL3p+uVr3MiHapFwisIfG50JgJHwP0fDGt5mk3Ek9EqnX9egL3DA4xEzG4jpykuSyt4cYUMsbRvQZ9nmOYeZE9Ud63z6+6JtGBC7rlxxn1dfpUZIbeaei54dB/5HMCcKdwk06RL2dsd6c4Hu0hpGuVXT3kz+bFq5IpIyXe+vGSZlvJHinkmcjbGy8uTDoKxMu81x4ETAEn6CKcY7RLb7sjgAEEClVbHN5YdcDYCFX+nHYHMaJ8St8L3LPkt3Ib7XeYd0foWNepvtuepOtXRo4dYRUZ5IRVrHzmLXjY4qcYmbkUkTnx7py3DDyiSfDxDwF8XuJqZ8lZAW7n46ngmGP6GwDzbFZ2ViGCWiyWoqPYy/iM+Ogc/mK/42nTwOV/8B6OtiSg7LAdIIoupLwxrBVcKH9YyUDbIGqrvUzlnWOLCx4E05JC22OBvQFJGh9UHgWVWws7NF76qfM915XiyoYv8/zV0efQF46QPLxVTGpQgz/UUNpqov/KDrWylYv6l0nzfX6LEjPRs9lbmx0EnPSrbSIg3R+4wMIffS/KI1nfAB/RCbhzZmxYnrWPrwDvz6Nd282VPa34J/PEw3s+r7Z+/BdIUv2DEc+oIxHOkogg19D7eC5573rS3sEKvYXDUfo6Qlbu6Xr/iCJzfgov0BZAWlLUFttlDn2jZlPK9j5Zcq+q7X9DfJ40j9wLM4vCK3ZRplXyPwGQ1yvNDThsE+SxyR9fhTLXN1fSOX9nu6podABallNmuYBo/tp0PbiNlTRf76TBwG+k+aRWlhJmXUdyWrZ9RbP4CNEtmeqePg1GqygQYikQ5wH1LXA9noTl6pkcV4nIb1+FyDcev00jNVeqJu+3/6YuA+J8OmfdM0eF3Gxrf/b0nrO1CLI7VxfkeVnNgrFskKEYkiTFEA6zBxsU059VyYfHt/bModXA28bSoSbSERw0s1tITbnYNesknVy53KVG",
+      "expect": {
+        "ok": false,
+        "problem": "decrypt"
+      }
+    },
+    {
+      "name": "json-length-overflow",
+      "description": "json_length points past the end of the payload.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQEAdnd4eXp7fH1+f4CBoPLztVe2D304JPgBiuaWe5NxTgJFsjEfg7VjfveMYmeGROptdAYLYKto90UHdzis0uHvIZ31mYE256n0PKtHe1epg69GiHlxSG6ZxFisdUb1frJKoX+HjBJZJezpsQNZkPSOgY3tQ3KyNPvAbYNYQXwoeL/XGVfc/jA08AJkt+fYdFgOq2Xw/OuJJTjNz9vIVISFLU7u3AICq/Z0iPKshoD+ylPx5fGRQFNnifzymCEa19VA7YyRrnGOpu4+Y8J1MFkZAwxB/4+DKavSKJYT9qWog6r+tHShSG95LbbJOKC+qHdcTEjR+Nt0OrTfgrXwJFxTXgDS/bdEEIUvc2hqhe/GmY5U+j9LrA3rkb9XWbuhOg1bOnANnXoH3b3a2Mg0uC1yjn0aCJzpXXinKy3HBzpZkubt8jmzVS1hnodWpCTV+A0aTwPLZMkd+RgD0WR9GLMz8y70oSJacNRmR3pBftAtuCa5K/kfykR7Lr8bhn7vHWKjbrPLJXDveO1O9LsZPH8w9ZPdQUbzN/GX2NTdVJNKHIzLp+kbj7LEo9cZjfs797kzn2Kbb8q/YoYH5P91TKU55awygqxbdKi277Hj82AOJ97sm6xvlQiHcsiz+2VgsE77VC8sq7QoMJBG/l2wj4KmPOXwqJ36QqnCEX3YbSiVRFq7TYzy1nngqAvMguI+VFel4fTyQUrxDw3SLmDsHWfR5nZy51l0SC9Zc6PnBgqwvhtdbKaJS3DQjnpPGPvaZI/O6nSzJk+RMxO6QeaY/65jRe/PsYn9cMbpfM7m17ZU+XzibYoHfWWEnM350b5dg4AGTwMXUotVIptH2c3c1HB6YH9D6LPQEGFctgWS5wrGPswOjzfE+1TkPhtLo3Vlyc5IBcxNVJm+6M8OcMLJwV3ItfNK/+v93rUH9EL4q6uWBWTls2lVAI3WBpVk4CIdFSQw875OwgBOANAMzI+QBPxfvP8cLTsKVi9IdKQ8pbVcm56MLnIknEQJHRJeG5rYefgDSJzpSJTiGQPRrg0p5X/o5YcSAcqGWsfTNzlPWFOFZs/BQ+3qMrveIFW0ak8kO5W/s2v4u3tFkau600bXEu4jkFy+GhcmVCy73ldeuzY6aegu7vGeVmTqc5M4+nbM3lRzE1cYN66Z/IoQy7XZgD5Hh3unfvtyKVoK0k53p7NF+oWQ26RARYveyT0IWaWHGmk6wpT2VlHUMxnP8+iAxgY/VL0H0W2M4q2i5NqGu41I3+ko/js9YtATDRXSGVZREn3TSI89tY8AGi1zEl+5DA3ae5BEt1OcOaTeVIbPme2kNzSAADxJ+45FIzYhu+zp8f/oC+vk+Zyo4b2f5DK4JcL15dY5/3kjPAF5P206z6ewDTbypds=",
+      "expect": {
+        "ok": false,
+        "problem": "payload"
+      }
+    },
+    {
+      "name": "unknown-schema",
+      "description": "schemaVersion 2: a manifest this version cannot read.",
+      "keyB64url": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+      "envelopeB64": "TkJSMQEAd3h5ent8fX5/gIGC0FWUUzTxClUz6SPsmKuyIAhD99WNBLm6YE3jyZBfg9o7Wf2IysP+5zyhwcIrebXuq4fCEEeJk9b0a37fmkRbXp9dHXTfs8/irDF8VQ92Neffog2tjCOxMYdPkzl3MbhPzeGHkrWul4mpmmWMRRbfpf23DH8S5Dtmdfy1O9IsUenFBHlVTe9UuRZx0Vro2JUXGwCehNzJO5Aby7mV3+qBNEp18i8xuP3FB4QSFCFChr2Uz1Z1Qf6j3zLNGoEy0JRuqDbQWuW5roodFX95nOKAOOtNDOmO8hvR6dtp+wh9x1/BukYV2iwle4HQIx3AgX2jj7fdjhGvjGe/jutcy8tMH54XQTc6spjuCuAQgdthgMkcr2XvYEJuw0+r3yzfMlIvUdTpv92ZHr+VagD15Y490antZ7OeTcVq78LlKcEF0pO9gxqIXpAeHUwvaF+KsYJN3Vvj2yBuXJwWXk4qEKndHascptx1MOTD7pjptZKF/j56VxOwv81bycVtbK0fpA6raUbrTxpdQPC0YYyqjicRBndREcRVs8TzoaPZzqFJXxpve2/+DXlPbg4q33AWSLfqK2WQAvFP+ssXYItp3vsEOHrFPRcMmC0nlQs97zN3Qdjk7WBLhmYC1zMal6N0rC1VaJIL5Z1EutGIxhtHqHfV5Vf1CxSUhGXp9wEo7lPv34QX+0TpCFJ5o/5Atf6il9okIOoP+TdTlpF99Y7XEbJjwXv44SEMv+5WSpPt4uCNfw0PY/+8a76HMMwO5olvccQy+uoOLIzVkKB4oBm5YJ8weoT9smVOxJCPFloZym7RyV33/xAfV5UoDl68nGVolM5JiRyiNMOCQFbrkrVAON3dbF1m4JVLxB/gf7PeAqZK76NwHcqXvrb3QwwBtO93z3s1bQjGB6uUSKJ3sG6Q7+WZYgM3vYlS1gllU5ErEAmj6Wr75WrgUivb0mqob7J2zIWidDXWJ09ZZLGSAjsX72sM7l1XgXrvkFZWC/qHpqNXMziFNkqryKUj25Rjz4wwHkSzZUEyM/Q7UqojyGBkhfrY3u9oiFsz3kY5QV94GPpFhBdwUgXYxEcAnE71FyUitsAOMfyyGT8t3Kqw790tD03rpfo6Fho+pP6vhiCOKOHGpD/wz8GbKGpvKuc0KEbTZs84aVoRi8vSK+jSbodOfeRud39EXhHIF1aX8vcBrbJdLfkTW2h1JIkhB3QZZFxjRnqdGjvmlwwHBR6UcpBueZjPZ8GLZvRRUdAph0/2+ZEA9wCOrDVP+fvmaP8Sb8e+egYpcOSOjsbBohW2nepGk/I4w0qQKBAw8w0dJgXYqS8amFB7agzky3qvtR5KkYHGSvDlvBCYMnupktq3mX+YHDzV8LM6yV0IVqSnhpHFWZa7U0V2B5SQ7t35ezsoqK1MheaJQyp+il75Nx8S8VPc2f4sXKV5n5NO4RmWL5PK6p1HQxUNjsXfIcwlbZT4n3cx",
+      "expect": {
+        "ok": false,
+        "problem": "manifest"
+      }
+    }
+  ]
+}
