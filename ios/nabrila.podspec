@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.description      = 'Native frame encoding for the Nabrila replay. Downloaded by pub (not CocoaPods).'
   s.homepage         = 'https://nabrila.com'
   s.license          = { :type => 'MIT', :file => '../LICENSE' }
-  s.author           = { 'Nabrila' => 'hello@nabrila.com' }
+  s.author           = { 'Nabrila' => 'support@nabrila.com' }
   s.source           = { :http => 'https://nabrila.com' }
   s.source_files     = 'nabrila/Sources/nabrila/**/*.swift'
   s.dependency 'Flutter'
