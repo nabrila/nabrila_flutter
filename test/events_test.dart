@@ -67,6 +67,38 @@ void main() {
     expect(json[2].containsKey('reqHeaders'), isFalse);
   });
 
+  test('the manifest carries the build commit only when it is one', () {
+    Map<String, Object?> appOf(String commit) =>
+        buildManifest(
+              capturedAt: t0,
+              note: '',
+              app: AppInfo(
+                appName: 'Demo',
+                appVersion: '1.0',
+                buildNumber: '7',
+                commit: commit,
+              ),
+              activeRoute: null,
+              device: const DeviceInfo(
+                platform: 'android',
+                osVersion: '15',
+                logicalWidth: 412,
+                logicalHeight: 915,
+                pixelRatio: 2.6,
+                textScaleFactor: 1,
+                locale: null,
+              ),
+              events: EventBuffer(),
+            )['app']
+            as Map<String, Object?>;
+    expect(appOf(' 3F2A9C1 ')['commit'], '3f2a9c1');
+    expect(appOf('a' * 40)['commit'], 'a' * 40);
+    expect(appOf('').containsKey('commit'), isFalse);
+    expect(appOf('main').containsKey('commit'), isFalse);
+    expect(appOf('abc12').containsKey('commit'), isFalse);
+    expect(appOf('a' * 41).containsKey('commit'), isFalse);
+  });
+
   test('the manifest has the required fields and caps the note', () {
     final manifest = buildManifest(
       capturedAt: t0,

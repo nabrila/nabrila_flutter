@@ -27,10 +27,15 @@ class EnvelopeTooLargeException implements Exception {
 
 /// Result of [sealReport]: the file to upload and the key that opens it.
 class SealedReport {
-  SealedReport({required this.envelope, required this.key});
+  SealedReport({required this.envelope, required this.key, this.verdictSecret});
 
   final Uint8List envelope;
   final Uint8List key;
+
+  /// 32 random bytes that stay on the phone (D34): their hash goes with the
+  /// upload, and only whoever holds them can answer "does it work now?".
+  /// Never part of the link. Null for reports sealed before it existed.
+  final Uint8List? verdictSecret;
 }
 
 /// `[uint32_be json_length][json segment][png][replay…]`. The PNG and the
@@ -135,7 +140,11 @@ Future<SealedReport> sealReport({
     iv: iv,
     flags: flagGzipJson,
   );
-  return SealedReport(envelope: envelope, key: key);
+  return SealedReport(
+    envelope: envelope,
+    key: key,
+    verdictSecret: randomBytes(32, random),
+  );
 }
 
 Future<({List<Uint8List> blobs, Map<String, Object?> meta})?> _packReplay(

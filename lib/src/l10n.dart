@@ -35,17 +35,26 @@ class NabrilaStrings {
   String get errSuspended => _t('errSuspended');
   String get errTooLarge => _t('errTooLarge');
   String get errQuota => _t('errQuota');
+  String get errPlanLimit => _t('errPlanLimit');
   String get errRateLimited => _t('errRateLimited');
   String get errBadEnvelope => _t('errBadEnvelope');
   String get errNetwork => _t('errNetwork');
   String get savedForLater => _t('savedForLater');
   String get deliveredLater => _t('deliveredLater');
   String get errServer => _t('errServer');
+  String get errDrawing => _t('errDrawing');
+  String get editAgain => _t('editAgain');
   String get floatingButton => _t('floatingButton');
   String get loopFixed => _t('loopFixed');
   String get loopNeedsInfo => _t('loopNeedsInfo');
   String get loopWontFix => _t('loopWontFix');
   String get loopNoteFrom => _t('loopNoteFrom');
+  String get loopFixedIn => _t('loopFixedIn');
+  String get loopAsk => _t('loopAsk');
+  String get loopWorks => _t('loopWorks');
+  String get loopStillFails => _t('loopStillFails');
+  String get loopSending => _t('loopSending');
+  String get loopSendFailed => _t('loopSendFailed');
   String get kindBug => _t('kindBug');
   String get kindVisual => _t('kindVisual');
   String get kindData => _t('kindData');
@@ -98,10 +107,15 @@ const Map<String, String> _en = {
   'errTooLarge': 'The report is too large to send.',
   'errQuota':
       'This app reached its monthly report limit. Ask your team to check their Nabrila plan.',
+  'errPlanLimit':
+      'This app is no longer covered by your team\'s Nabrila plan, which now allows fewer apps. Ask your team to check it.',
   'errRateLimited': 'Too many reports in a short time. Try again in a minute.',
   'errBadEnvelope': 'The server rejected the report.',
   'errNetwork': 'No connection. Check your network and try again.',
   'errServer': 'Something went wrong on the server. Try again later.',
+  'errDrawing':
+      'Your drawings could not be added to the screenshot, so nothing was sent.',
+  'editAgain': 'Back to editing',
   'savedForLater':
       'Your report is saved on this phone and will be sent on its own as soon as it can. You will see the link here when it goes out.',
   'deliveredLater': 'A saved report was sent.',
@@ -110,6 +124,13 @@ const Map<String, String> _en = {
   'loopNeedsInfo': 'The team needs more details about your report.',
   'loopWontFix': 'The team reviewed your report and will leave it as it is.',
   'loopNoteFrom': 'From the team: {note}',
+  'loopFixedIn':
+      'Your report was fixed in version {version}. Once you install it, we will ask whether it works.',
+  'loopAsk': 'Your report was fixed. Does it work now?',
+  'loopWorks': 'It works',
+  'loopStillFails': 'It still fails',
+  'loopSending': 'Sending…',
+  'loopSendFailed': 'Could not send; we will try again later',
   'kindBug': 'Something fails',
   'kindVisual': 'Looks wrong',
   'kindData': 'Wrong data',
@@ -162,11 +183,16 @@ const Map<String, String> _es = {
   'errTooLarge': 'El reporte es demasiado grande para enviarlo.',
   'errQuota':
       'Esta app alcanzó su límite mensual de reportes. Pide a tu equipo que revise su plan de Nabrila.',
+  'errPlanLimit':
+      'Esta app quedó fuera del plan de Nabrila de tu equipo, que ahora admite menos apps. Pide a tu equipo que lo revise.',
   'errRateLimited':
       'Demasiados reportes en poco tiempo. Inténtalo de nuevo en un minuto.',
   'errBadEnvelope': 'El servidor rechazó el reporte.',
   'errNetwork': 'Sin conexión. Revisa tu red e inténtalo de nuevo.',
   'errServer': 'Algo falló en el servidor. Inténtalo más tarde.',
+  'errDrawing':
+      'No se pudieron agregar tus marcas a la captura, así que no se envió nada.',
+  'editAgain': 'Volver a editar',
   'savedForLater':
       'Tu reporte quedó guardado en este teléfono y se enviará solo apenas se pueda. Verás el enlace aquí cuando salga.',
   'deliveredLater': 'Se envió un reporte que estaba guardado.',
@@ -175,6 +201,13 @@ const Map<String, String> _es = {
   'loopNeedsInfo': 'El equipo necesita más detalles sobre tu reporte.',
   'loopWontFix': 'El equipo revisó tu reporte y lo dejará como está.',
   'loopNoteFrom': 'Del equipo: {note}',
+  'loopFixedIn':
+      'Tu reporte quedó corregido en la versión {version}. Cuando la instales, te preguntaremos si ya funciona.',
+  'loopAsk': 'Tu reporte quedó corregido. ¿Ya funciona?',
+  'loopWorks': 'Ya funciona',
+  'loopStillFails': 'Sigue fallando',
+  'loopSending': 'Enviando…',
+  'loopSendFailed': 'No se pudo enviar; lo intentamos de nuevo más tarde',
   'kindBug': 'Algo falla',
   'kindVisual': 'Se ve mal',
   'kindData': 'Dato incorrecto',
@@ -226,11 +259,16 @@ const Map<String, String> _pt = {
   'errTooLarge': 'O relatório é grande demais para ser enviado.',
   'errQuota':
       'Este app atingiu o limite mensal de relatórios. Peça à equipe para revisar o plano do Nabrila.',
+  'errPlanLimit':
+      'Este app ficou fora do plano do Nabrila da sua equipe, que agora permite menos apps. Peça à equipe para revisá-lo.',
   'errRateLimited':
       'Relatórios demais em pouco tempo. Tente de novo em um minuto.',
   'errBadEnvelope': 'O servidor rejeitou o relatório.',
   'errNetwork': 'Sem conexão. Verifique sua rede e tente de novo.',
   'errServer': 'Algo deu errado no servidor. Tente mais tarde.',
+  'errDrawing':
+      'Não foi possível adicionar suas marcas à captura, então nada foi enviado.',
+  'editAgain': 'Voltar a editar',
   'savedForLater':
       'Seu relatório ficou salvo neste celular e será enviado sozinho assim que possível. Você verá o link aqui quando ele sair.',
   'deliveredLater': 'Um relatório salvo foi enviado.',
@@ -239,6 +277,13 @@ const Map<String, String> _pt = {
   'loopNeedsInfo': 'A equipe precisa de mais detalhes sobre seu relatório.',
   'loopWontFix': 'A equipe revisou seu relatório e vai deixar como está.',
   'loopNoteFrom': 'Da equipe: {note}',
+  'loopFixedIn':
+      'Seu relatório foi corrigido na versão {version}. Quando você instalar, vamos perguntar se já funciona.',
+  'loopAsk': 'Seu relatório foi corrigido. Já funciona?',
+  'loopWorks': 'Já funciona',
+  'loopStillFails': 'Ainda falha',
+  'loopSending': 'Enviando…',
+  'loopSendFailed': 'Não foi possível enviar; tentaremos de novo mais tarde',
   'kindBug': 'Algo falha',
   'kindVisual': 'Aparece errado',
   'kindData': 'Dado errado',

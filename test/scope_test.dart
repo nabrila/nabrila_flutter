@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:nabrila/nabrila.dart';
+import 'package:nabrila/src/report_status.dart';
 import 'package:nabrila/src/runtime.dart';
 
 import 'support/open_envelope.dart';
@@ -108,7 +110,11 @@ void main() {
         .where((e) => e['kind'] == 'tap')
         .toList();
     expect(taps[0]['targetHint'], isNull);
+    // Where a finger lands on a masked PIN pad spells the PIN (CL-05).
+    expect(taps[0]['xNorm'], isNull);
+    expect(taps[0]['yNorm'], isNull);
     expect(taps[1]['targetHint'], 'TextField');
+    expect(taps[1]['xNorm'], isA<double>());
     final all = runtime.buffer.toJson().toString();
     expect(all.contains('4242'), isFalse);
     expect(all.contains('hunter2'), isFalse);
@@ -184,10 +190,30 @@ void main() {
     expect(requests.single.headers['Authorization'], 'Bearer nbr_test');
     expect(requests.single.bodyBytes.sublist(0, 4), [0x4e, 0x42, 0x52, 0x31]);
     expect(find.text('Report ready'), findsOneWidget);
-    final link = tester
-        .widget<SelectableText>(find.byType(SelectableText))
-        .data!;
+    // The key is never shown whole (CL-26); Copy hands over the full link.
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          copied = (call.arguments as Map)['text'] as String;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    await tester.runAsync(() async => tester.tap(find.byIcon(Icons.copy)));
+    await _until(tester, () => copied != null);
+    final link = copied!;
     expect(link, contains('https://nabrila.com/r/rep1#k='));
+    final shown = find.textContaining('/r/rep1#k=');
+    expect(tester.widget<Text>(shown).data, endsWith('…'));
+    expect(find.textContaining(link.split('#k=').last), findsNothing);
     final key = base64Url.decode(base64Url.normalize(link.split('#k=').last));
     final opened = await tester.runAsync(
       () => openEnvelope(requests.single.bodyBytes, key),
@@ -243,6 +269,84 @@ void main() {
       runtime.delivery.dispose();
     });
   }
+
+  testWidgets('the fix banner names the version, then asks if it works', (
+    tester,
+  ) async {
+    final runtime = NabrilaRuntime(
+      appKey: 'nbr_test',
+      client: MockClient((_) async => http.Response('{"reports":[]}', 200)),
+      storageDir: _freshOutbox(),
+    );
+    Nabrila.debugSetRuntime(runtime);
+    await tester.pumpWidget(_app());
+
+    runtime.loop.updates.value = [
+      const ReportStatus(id: 'r1', status: 'fixed', fixedIn: '1.4.2+37'),
+    ];
+    await tester.pump();
+    expect(find.textContaining('fixed in version 1.4.2+37'), findsOneWidget);
+    expect(find.bySemanticsLabel('It works'), findsNothing);
+
+    runtime.loop.updates.value = [
+      const ReportStatus(
+        id: 'r1',
+        status: 'fixed',
+        fixedIn: '1.4.2+37',
+        askVerdict: true,
+      ),
+    ];
+    await tester.pump();
+    expect(
+      find.text('Your report was fixed. Does it work now?'),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('It works'), findsOneWidget);
+    expect(find.bySemanticsLabel('It still fails'), findsOneWidget);
+
+    // A report this phone no longer remembers: the question just goes away.
+    await tester.runAsync(
+      () async => tester.tap(find.bySemanticsLabel('It still fails')),
+    );
+    await _until(tester, () => runtime.loop.updates.value.isEmpty);
+    expect(find.text('Your report was fixed. Does it work now?'), findsNothing);
+  });
+
+  testWidgets('the banner shows sending, then could not send', (tester) async {
+    final runtime = NabrilaRuntime(
+      appKey: 'nbr_test',
+      client: MockClient((_) async => http.Response('{"reports":[]}', 200)),
+      storageDir: _freshOutbox(),
+    );
+    Nabrila.debugSetRuntime(runtime);
+    await tester.pumpWidget(_app());
+    runtime.loop.updates.value = [
+      const ReportStatus(
+        id: 'r1',
+        status: 'fixed',
+        fixedIn: '1.4.2',
+        updatedAt: '2026-11-27T10:00:00Z',
+        askVerdict: true,
+      ),
+    ];
+    await tester.pump();
+    expect(find.bySemanticsLabel('It works'), findsOneWidget);
+
+    runtime.loop.answering.value = {'r1': AnswerState.sending};
+    await tester.pump();
+    expect(find.text('Sending…'), findsOneWidget);
+    expect(find.bySemanticsLabel('It works'), findsNothing);
+
+    runtime.loop.answering.value = {'r1': AnswerState.failed};
+    await tester.pump();
+    expect(
+      find.text('Could not send; we will try again later'),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('It still fails'), findsNothing);
+    // It can still be closed.
+    expect(find.bySemanticsLabel('Close'), findsOneWidget);
+  });
 
   testWidgets('no network: the report waits on the phone and goes out later', (
     tester,
@@ -323,6 +427,35 @@ void main() {
     });
     await _until(tester, () => find.text('Report ready').evaluate().isNotEmpty);
     expect(find.text('Report ready'), findsOneWidget);
+    expect(posts, 1);
+    runtime.delivery.dispose();
+  });
+
+  testWidgets('too large: back to editing, and the next send is new', (
+    tester,
+  ) async {
+    var posts = 0;
+    final runtime = NabrilaRuntime(
+      appKey: 'nbr_test',
+      client: MockClient((request) async {
+        posts++;
+        return http.Response('{"error":"too_large"}', 413);
+      }),
+      storageDir: _freshOutbox(),
+    );
+    Nabrila.debugSetRuntime(runtime);
+    await tester.pumpWidget(_app());
+    await tester.runAsync(() async => tester.tap(_bug));
+    await _until(tester, () => find.text('Send').evaluate().isNotEmpty);
+    await tester.runAsync(() async => tester.tap(find.text('Send')));
+    await _until(
+      tester,
+      () => find.text('Back to editing').evaluate().isNotEmpty,
+    );
+    expect(find.text('Try again'), findsNothing);
+    await tester.tap(find.text('Back to editing'));
+    await tester.pump();
+    expect(find.text('Send'), findsOneWidget);
     expect(posts, 1);
     runtime.delivery.dispose();
   });

@@ -7,8 +7,9 @@ import 'runtime.dart';
 /// to `GoRouter(observers: …)`; go_router hands it to the navigators of its
 /// shell routes too, so bottom tabs are recorded as well.
 ///
-/// Routes are named by `RouteSettings.name` without the query (go_router
-/// names them by their path pattern, like `/product/:id`). An unnamed route
+/// Routes are named by `RouteSettings.name` without the query or the
+/// fragment (go_router names them by their path pattern, like
+/// `/product/:id`). An unnamed route
 /// of a private type (a go_router shell, a popup menu) is not a screen of
 /// the app: it is not recorded, and going back to it records the screen
 /// that was showing inside it.
@@ -19,8 +20,8 @@ class NabrilaNavigatorObserver extends NavigatorObserver {
   static String? _named(Route<dynamic>? route) {
     final name = route?.settings.name;
     if (name == null || name.isEmpty) return null;
-    final query = name.indexOf('?');
-    return query < 0 ? name : name.substring(0, query);
+    final clean = routeName(name);
+    return clean.isEmpty ? null : clean;
   }
 
   /// `DialogRoute<bool>` → `DialogRoute`; null for private types.

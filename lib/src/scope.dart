@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'capture.dart';
 import 'capture_overlay.dart';
+import 'clipboard.dart';
 import 'element_locator.dart';
 import 'events.dart';
 import 'l10n.dart';
@@ -81,20 +82,26 @@ class _NabrilaScopeState extends State<NabrilaScope> {
     if (runtime == null || box is! RenderBox || !box.hasSize || root == null) {
       return;
     }
-    String? hint;
+    TapTarget target;
     try {
-      hint = resolveTapHint(
+      target = resolveTap(
         root as Element,
         hitRenderObjects(event.viewId, event.position),
       );
     } on Object {
-      hint = null;
+      target = (hint: null, masked: false);
+    }
+    // Inside a mask the tap keeps no position: the spots on a masked PIN
+    // pad spell the PIN.
+    if (target.masked) {
+      runtime.recordTap(xNorm: null, yNorm: null, targetHint: null);
+      return;
     }
     final local = box.globalToLocal(event.position);
     runtime.recordTap(
       xNorm: box.size.width == 0 ? 0 : local.dx / box.size.width,
       yNorm: box.size.height == 0 ? 0 : local.dy / box.size.height,
-      targetHint: hint,
+      targetHint: target.hint,
     );
   }
 
@@ -176,9 +183,15 @@ class _NabrilaScopeState extends State<NabrilaScope> {
         appName: info.appName.isEmpty ? 'unknown' : info.appName,
         appVersion: info.version,
         buildNumber: info.buildNumber,
+        commit: buildCommit,
       );
     } on Object {
-      return const AppInfo(appName: 'unknown', appVersion: '', buildNumber: '');
+      return const AppInfo(
+        appName: 'unknown',
+        appVersion: '',
+        buildNumber: '',
+        commit: buildCommit,
+      );
     }
   }
 
@@ -264,20 +277,42 @@ class _NabrilaScopeState extends State<NabrilaScope> {
   }
 
   /// What the team said about a report this phone sent.
-  Widget _statusBanner(NabrilaRuntime runtime, ReportStatus update) {
+  Widget _statusBanner(NabrilaRuntime runtime, ReportStatus update) =>
+      ValueListenableBuilder<Map<String, AnswerState>>(
+        valueListenable: runtime.loop.answering,
+        builder: (context, answering, _) =>
+            _statusFrame(runtime, update, answering[update.id]),
+      );
+
+  Widget _statusFrame(
+    NabrilaRuntime runtime,
+    ReportStatus update,
+    AnswerState? answer,
+  ) {
     final s = _strings;
-    final title = switch (update.status) {
-      'fixed' => s.loopFixed,
-      'needs_info' => s.loopNeedsInfo,
-      _ => s.loopWontFix,
-    };
+    final fixedIn = update.fixedIn;
+    final title = answer == AnswerState.sending
+        ? s.loopSending
+        : answer == AnswerState.failed
+        ? s.loopSendFailed
+        : update.askVerdict
+        ? s.loopAsk
+        : switch (update.status) {
+            'fixed' when fixedIn != null => s.loopFixedIn.replaceAll(
+              '{version}',
+              fixedIn,
+            ),
+            'fixed' => s.loopFixed,
+            'needs_info' => s.loopNeedsInfo,
+            _ => s.loopWontFix,
+          };
     final note = update.note;
     return _bannerFrame(
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: _bannerText),
-          if (note != null && note.trim().isNotEmpty)
+          if (answer == null && note != null && note.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
@@ -290,6 +325,18 @@ class _NabrilaScopeState extends State<NabrilaScope> {
         ],
       ),
       [
+        if (update.askVerdict && answer == null) ...[
+          _bannerAction(
+            Icons.thumb_up_alt_outlined,
+            s.loopWorks,
+            () => unawaited(runtime.loop.answer(update, works: true)),
+          ),
+          _bannerAction(
+            Icons.thumb_down_alt_outlined,
+            s.loopStillFails,
+            () => unawaited(runtime.loop.answer(update, works: false)),
+          ),
+        ],
         _bannerAction(
           Icons.close,
           s.close,
@@ -342,7 +389,7 @@ class _NabrilaScopeState extends State<NabrilaScope> {
             children: [
               Expanded(child: Text(_strings.deliveredLater, style: text)),
               _bannerAction(Icons.copy, _strings.copy, () {
-                Clipboard.setData(ClipboardData(text: result.link));
+                unawaited(copySecret(result.link));
                 delivery.seen(result);
               }),
               _bannerAction(Icons.ios_share, _strings.share, () {
@@ -388,10 +435,7 @@ class _NabrilaScopeState extends State<NabrilaScope> {
       bottom: _buttonOffset.dy,
       child: GestureDetector(
         onPanUpdate: (d) => setState(() {
-          _buttonOffset = Offset(
-            (_buttonOffset.dx - d.delta.dx).clamp(0, size.width - 56),
-            (_buttonOffset.dy - d.delta.dy).clamp(0, size.height - 56),
-          );
+          _buttonOffset = clampButtonOffset(_buttonOffset - d.delta, size);
         }),
         child: Semantics(
           button: true,
@@ -415,3 +459,15 @@ class _NabrilaScopeState extends State<NabrilaScope> {
     );
   }
 }
+
+/// Size of the floating button's touch area.
+const double _buttonExtent = 56;
+
+/// Where the floating button may sit: inside the window, measured from its
+/// bottom right corner. A window smaller than the button (a split screen,
+/// a picture-in-picture app) pins it to the corner instead of failing.
+@visibleForTesting
+Offset clampButtonOffset(Offset wanted, Size window) => Offset(
+  wanted.dx.clamp(0, math.max(0, window.width - _buttonExtent)),
+  wanted.dy.clamp(0, math.max(0, window.height - _buttonExtent)),
+);

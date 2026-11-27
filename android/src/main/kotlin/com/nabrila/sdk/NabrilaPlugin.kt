@@ -1,5 +1,8 @@
 package com.nabrila.sdk
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaCodec
@@ -11,6 +14,7 @@ import android.media.MediaMuxer
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.PersistableBundle
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
@@ -46,6 +50,7 @@ import java.util.concurrent.Executors
 class NabrilaPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
   private var channel: MethodChannel? = null
   private var shake: EventChannel? = null
+  private lateinit var context: Context
   private lateinit var cacheDir: File
   private lateinit var outboxDir: File
   private val videoWorker = Executors.newSingleThreadExecutor()
@@ -55,6 +60,7 @@ class NabrilaPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
   private var reusable: Bitmap? = null
 
   override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    context = binding.applicationContext
     cacheDir = binding.applicationContext.cacheDir
     // Videos left behind by a process killed mid-encode.
     videoWorker.execute {
@@ -94,9 +100,29 @@ class NabrilaPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         val path = try { outboxDir.apply { mkdirs() }.absolutePath } catch (e: Throwable) { null }
         main.post { result.success(path) }
       }
+      // A link with the report key: Android 13+ keeps it out of the
+      // clipboard preview and the keyboard's suggestions.
+      "copySensitive" -> main.post { result.success(copySensitive(call.argument<String>("text"))) }
       "jpeg" -> respond(call, result) { jpeg(call) }
       "video" -> videoWorker.execute { respond(call, result) { video(call) } }
       else -> main.post { result.notImplemented() }
+    }
+  }
+
+  private fun copySensitive(text: String?): Boolean {
+    if (text == null) return false
+    return try {
+      val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+      val clip = ClipData.newPlainText("Nabrila", text)
+      // ClipDescription.EXTRA_IS_SENSITIVE (API 33), by name so it builds
+      // with any compileSdk; older versions ignore it.
+      clip.description.extras = PersistableBundle().apply {
+        putBoolean("android.content.extra.IS_SENSITIVE", true)
+      }
+      clipboard.setPrimaryClip(clip)
+      true
+    } catch (e: Throwable) {
+      false
     }
   }
 

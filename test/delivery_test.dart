@@ -20,6 +20,12 @@ class _Server {
   /// The first N key uploads fail.
   int keyFailures = 0;
 
+  /// Key uploads are refused for good (403), as with a wrong token.
+  bool refuseKeys = false;
+
+  /// Whether answers carry `keyToken` (SOL #6).
+  bool sendsKeyToken = true;
+
   /// Answers every request with this, as a captive portal or proxy would.
   http.Response? intercept;
   final List<http.Request> requests = [];
@@ -32,11 +38,15 @@ class _Server {
     final intercepted = intercept;
     if (intercepted != null) return intercepted;
     if (request.method == 'PUT') {
+      final id = request.url.pathSegments[3];
+      if (refuseKeys || request.headers['X-Nabrila-Key-Token'] != 'tok-$id') {
+        return http.Response('{"error":"forbidden"}', 403);
+      }
       if (keyFailures > 0) {
         keyFailures--;
         return http.Response('', 503);
       }
-      _keys.add(request.url.pathSegments[3]);
+      _keys.add(id);
       return http.Response('', 204);
     }
     if (status != 201) {
@@ -56,6 +66,7 @@ class _Server {
         'expiresAt': '2026-12-26T00:00:00Z',
         'keyCustody': keyCustody ? 'server' : 'none',
         'keyStored': _keys.contains(id),
+        if (keyCustody && sendsKeyToken) 'keyToken': 'tok-$id',
       }),
       existing == null ? 201 : 200,
     );
@@ -244,6 +255,25 @@ void main() {
     },
   );
 
+  test(
+    'plan_limit (403) is permanent: not kept, not retried (AUD-15)',
+    () async {
+      final server = _Server()
+        ..intercept = http.Response('{"error":"plan_limit"}', 403);
+      final d = delivery(server);
+      final sealed = _sealed(7);
+      final pending = await d.keep(sealed);
+      final outcome = await d.deliver(sealed, pending);
+      expect(outcome.failure, UploadFailure.planLimit);
+      expect(outcome.saved, isFalse);
+      expect(files(), isEmpty);
+      expect(server.posts, 1, reason: 'no quick retries');
+      // The outbox has nothing left to try.
+      await d.drain();
+      expect(server.posts, 1);
+    },
+  );
+
   test('a proxy 401 or 403 without our JSON is retried, ours is not', () async {
     for (final status in [401, 403, 400, 302, 404, 407]) {
       final server = _Server()..intercept = http.Response('denied', status);
@@ -327,6 +357,86 @@ void main() {
     expect(server.puts, 3);
     expect(files(), isEmpty);
     expect(d.delivered.value, isEmpty);
+  });
+
+  test('the key retry survives a restart with its token (CL-20)', () async {
+    final server = _Server()
+      ..keyCustody = true
+      ..keyFailures = 1;
+    final first = delivery(server);
+    final sealed = _sealed(1);
+    final pending = (await first.keep(sealed))!;
+    final outcome = await first.deliver(sealed, pending);
+    expect(outcome.result!.keyCustodyFailed, isTrue);
+    first
+      ..release(pending)
+      ..dispose();
+    final state = files().firstWhere((f) => f.endsWith('.json'));
+    expect(File('${dir.path}/$state').readAsStringSync(), contains('tok-rep1'));
+
+    // The app is closed; the next start sends the key with its token.
+    now = now.add(const Duration(hours: 2));
+    final second = delivery(server);
+    await second.drain();
+    second.dispose();
+    final put = server.requests.lastWhere((r) => r.method == 'PUT');
+    expect(put.headers['X-Nabrila-Key-Token'], 'tok-rep1');
+    expect(put.bodyBytes, sealed.key);
+    expect(files(), isEmpty);
+  });
+
+  test('a refused key (403) is never sent again', () async {
+    final server = _Server()
+      ..keyCustody = true
+      ..refuseKeys = true;
+    final d = delivery(server);
+    final sealed = _sealed(1);
+    final pending = (await d.keep(sealed))!;
+    final outcome = await d.deliver(sealed, pending);
+    expect(outcome.result!.keyCustodyFailed, isTrue);
+    expect(outcome.result!.keyToken, isNull);
+    d.release(pending);
+    now = now.add(const Duration(hours: 2));
+    await d.drain();
+    d.dispose();
+    expect(server.puts, 1);
+    expect(files(), isEmpty);
+  });
+
+  test('without a keyToken the key never leaves the phone', () async {
+    final server = _Server()
+      ..keyCustody = true
+      ..sendsKeyToken = false;
+    final d = delivery(server);
+    final sealed = _sealed(1);
+    final pending = (await d.keep(sealed))!;
+    await d.deliver(sealed, pending);
+    d.release(pending);
+    now = now.add(const Duration(hours: 2));
+    await d.drain();
+    d.dispose();
+    expect(server.puts, 0);
+  });
+
+  test('keepKeyOnDevice: the key is never sent, whatever the plan', () async {
+    final server = _Server()..keyCustody = true;
+    final d = ReportDelivery(
+      client: server.client,
+      endpoint: 'https://nabrila.com',
+      appKey: 'nbr_test',
+      storageDir: () async => dir,
+      clock: () => now,
+      sleep: (d) async {},
+      keepKeyOnDevice: true,
+    );
+    final sealed = _sealed(1);
+    final pending = await d.keep(sealed);
+    final outcome = await d.deliver(sealed, pending);
+    d.dispose();
+    expect(outcome.result!.keyCustodyFailed, isFalse);
+    expect(outcome.result!.keyStoredOnServer, isFalse);
+    expect(server.puts, 0);
+    expect(files(), isEmpty);
   });
 
   test('a link sent in the background survives a restart until seen', () async {

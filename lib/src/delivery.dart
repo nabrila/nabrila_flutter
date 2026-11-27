@@ -41,6 +41,7 @@ class ReportDelivery {
     DateTime Function()? clock,
     Future<void> Function(Duration)? sleep,
     this.onSent,
+    this.keepKeyOnDevice = false,
   }) : _storageDir = storageDir ?? defaultStorageDir,
        _clock = clock ?? DateTime.now,
        _sleep = sleep ?? Future<void>.delayed;
@@ -48,6 +49,9 @@ class ReportDelivery {
   final http.Client client;
   final String endpoint;
   final String appKey;
+
+  /// The key never leaves the phone, even if the plan keeps keys.
+  final bool keepKeyOnDevice;
   final Future<Directory?> Function() _storageDir;
   final DateTime Function() _clock;
   final Future<void> Function(Duration) _sleep;
@@ -58,6 +62,7 @@ class ReportDelivery {
     List<int> key,
     String endpoint,
     String appKey,
+    List<int>? verdictSecret,
   )?
   onSent;
 
@@ -155,6 +160,7 @@ class ReportDelivery {
         sealed.key,
         pending?.endpoint ?? endpoint,
         pending?.appKey ?? appKey,
+        sealed.verdictSecret,
       );
       // The tester sees the link now; only a key still to store keeps it.
       await _quietly(
@@ -162,6 +168,7 @@ class ReportDelivery {
           id: result.id,
           expiresAt: result.expiresAt,
           keyPending: result.keyCustodyFailed,
+          keyToken: result.keyToken,
           shown: true,
         ),
       );
@@ -259,12 +266,20 @@ class ReportDelivery {
         endpoint: pending.endpoint,
         appKey: pending.appKey,
         sealed: sealed,
+        keepKeyOnDevice: keepKeyOnDevice,
       );
-      onSent?.call(result, sealed.key, pending.endpoint, pending.appKey);
+      onSent?.call(
+        result,
+        sealed.key,
+        pending.endpoint,
+        pending.appKey,
+        sealed.verdictSecret,
+      );
       await pending.markSent(
         id: result.id,
         expiresAt: result.expiresAt,
         keyPending: result.keyCustodyFailed,
+        keyToken: result.keyToken,
         shown: false,
       );
       _announce(pending);
@@ -301,19 +316,32 @@ class ReportDelivery {
     ];
   }
 
-  /// The team plan keeps the key, and the first try to give it failed.
+  /// The team plan keeps the key, and the first try to give it failed. It
+  /// is tried again with the permission the upload got; without one (or
+  /// when the app now keeps keys on the phone) it is not sent.
   Future<void> _storeKeyLater(PendingReport pending) async {
-    final ok = await storeKey(
+    final token = pending.keyToken;
+    if (token == null || keepKeyOnDevice) {
+      debugPrint('nabrila: the key of ${pending.sentId} stays on the phone.');
+      await pending.update(keyPending: false);
+      return;
+    }
+    final outcome = await storeKey(
       client: client,
       endpoint: pending.endpoint,
       appKey: pending.appKey,
       id: pending.sentId!,
       key: pending.key,
+      keyToken: token,
     );
-    if (ok) {
-      await pending.update(keyPending: false);
-    } else {
-      await pending.failed();
+    switch (outcome) {
+      case KeyUpload.stored:
+        await pending.update(keyPending: false);
+      case KeyUpload.refused:
+        debugPrint('nabrila: the server refused the key of ${pending.sentId}.');
+        await pending.update(keyPending: false);
+      case KeyUpload.failed:
+        await pending.failed();
     }
   }
 
@@ -348,6 +376,7 @@ class ReportDelivery {
           endpoint: endpoint,
           appKey: appKey,
           sealed: sealed,
+          keepKeyOnDevice: keepKeyOnDevice,
         );
       } on UploadException catch (e) {
         final fast = _clock().difference(started) < const Duration(seconds: 10);

@@ -1,5 +1,7 @@
 name: nabrila
-description: Instant bug reports with technical context for Flutter apps. End-to-end encrypted share links.
+description: >-
+  Bug reports from a tester's phone: annotated screenshot, taps, route, console
+  and HTTP calls in one encrypted link. Copy it to Claude Code or Cursor.
 version: 0.1.0
 homepage: https://nabrila.com
 repository: https://github.com/nabrila/nabrila_flutter

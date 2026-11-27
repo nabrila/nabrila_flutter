@@ -61,6 +61,7 @@ class ReportOutbox {
       this,
       name,
       key: sealed.key,
+      verdictSecret: sealed.verdictSecret,
       appKey: appKey,
       endpoint: endpoint,
       createdAt: now,
@@ -128,6 +129,7 @@ class PendingReport {
     this._outbox,
     this.name, {
     required this.key,
+    this.verdictSecret,
     required this.appKey,
     required this.endpoint,
     required this.createdAt,
@@ -137,6 +139,9 @@ class PendingReport {
   final ReportOutbox _outbox;
   final String name;
   final Uint8List key;
+
+  /// Kept with the report so every retry sends the same hash (D34).
+  final Uint8List? verdictSecret;
   final String appKey;
   final String endpoint;
   final DateTime createdAt;
@@ -154,6 +159,10 @@ class PendingReport {
   /// The plan keeps the key and the server does not have it yet.
   bool keyPending = false;
 
+  /// The server's permission to store the key of this report, for the
+  /// retries of [keyPending].
+  String? keyToken;
+
   /// The tester already saw the link.
   bool shown = false;
 
@@ -166,8 +175,11 @@ class PendingReport {
   File get _stateFile => File('${_outbox.dir.path}/$name.json');
 
   /// The report as it was sealed, byte for byte.
-  Future<SealedReport> load() async =>
-      SealedReport(envelope: await _envelopeFile.readAsBytes(), key: key);
+  Future<SealedReport> load() async => SealedReport(
+    envelope: await _envelopeFile.readAsBytes(),
+    key: key,
+    verdictSecret: verdictSecret,
+  );
 
   /// The longest wait between two attempts.
   static const Duration maxWait = Duration(hours: 1);
@@ -201,10 +213,12 @@ class PendingReport {
     String? expiresAt,
     required bool keyPending,
     required bool shown,
+    String? keyToken,
   }) async {
     sentId = id;
     this.expiresAt = expiresAt;
     this.keyPending = keyPending;
+    this.keyToken = keyPending ? keyToken : null;
     this.shown = shown;
     attempts = 0;
     nextAt = _outbox._now();
@@ -217,6 +231,7 @@ class PendingReport {
   Future<void> update({bool? shown, bool? keyPending}) async {
     if (shown != null) this.shown = shown;
     if (keyPending != null) this.keyPending = keyPending;
+    if (!this.keyPending) keyToken = null;
     if (settled) return remove();
     await _save();
   }
@@ -232,6 +247,8 @@ class PendingReport {
       jsonEncode({
         'v': 1,
         'key': base64Encode(key),
+        if (verdictSecret != null)
+          'verdictSecret': base64Encode(verdictSecret!),
         'appKey': appKey,
         'endpoint': endpoint,
         'createdAt': createdAt.toIso8601String(),
@@ -240,6 +257,7 @@ class PendingReport {
         'sentId': sentId,
         'expiresAt': expiresAt,
         'keyPending': keyPending,
+        'keyToken': keyToken,
         'shown': shown,
       }),
     ),
@@ -262,6 +280,9 @@ class PendingReport {
           outbox,
           name,
           key: base64Decode(json['key'] as String),
+          verdictSecret: json['verdictSecret'] is String
+              ? base64Decode(json['verdictSecret'] as String)
+              : null,
           appKey: json['appKey'] as String,
           endpoint: json['endpoint'] as String,
           createdAt: DateTime.parse(json['createdAt'] as String),
@@ -271,6 +292,9 @@ class PendingReport {
         ..sentId = sentId
         ..expiresAt = json['expiresAt'] as String?
         ..keyPending = json['keyPending'] == true
+        ..keyToken = json['keyToken'] is String
+            ? json['keyToken'] as String
+            : null
         ..shown = json['shown'] == true;
     } on Object {
       return null;

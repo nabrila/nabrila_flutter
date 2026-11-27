@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -62,6 +63,60 @@ void main() {
     expect(seenByPlatform.single, isA<StateError>());
     final errors = runtime.buffer.toJson().where((e) => e['level'] == 'error');
     expect(errors.length, 2);
+  });
+
+  testWidgets('an uncaught error reaches the app zone once (Astra #31)', (
+    tester,
+  ) async {
+    final originalFlutter = FlutterError.onError;
+    final originalPlatform = PlatformDispatcher.instance.onError;
+    addTearDown(() {
+      FlutterError.onError = originalFlutter;
+      PlatformDispatcher.instance.onError = originalPlatform;
+    });
+    final caught = <Object>[];
+    runZonedGuarded(
+      () => Nabrila.run(
+        appKey: 'nbr_x',
+        enabled: true,
+        app: () => unawaited(Future<void>.error(StateError('boot'))),
+      ),
+      (error, _) => caught.add(error),
+    );
+    await tester.pump();
+    expect(caught, hasLength(1));
+    final errors = NabrilaRuntime.current!.buffer.toJson().where(
+      (e) => e['level'] == 'error',
+    );
+    expect(errors.single['message'], contains('boot'));
+  });
+
+  testWidgets('an app that sets FlutterError.onError is chained (CL-23)', (
+    tester,
+  ) async {
+    final originalFlutter = FlutterError.onError;
+    final originalPlatform = PlatformDispatcher.instance.onError;
+    addTearDown(() {
+      FlutterError.onError = originalFlutter;
+      PlatformDispatcher.instance.onError = originalPlatform;
+    });
+    final seenByApp = <String>[];
+    // The test framework's own handler would fail the test.
+    FlutterError.onError = (_) {};
+    Nabrila.run(
+      appKey: 'nbr_x',
+      enabled: true,
+      // Replaces the SDK's handler without calling it.
+      app: () =>
+          FlutterError.onError = (details) =>
+              seenByApp.add(details.exceptionAsString()),
+    );
+    FlutterError.onError!(FlutterErrorDetails(exception: Exception('late')));
+    expect(seenByApp.single, contains('late'));
+    final errors = NabrilaRuntime.current!.buffer.toJson().where(
+      (e) => e['level'] == 'error',
+    );
+    expect(errors.single['message'], contains('late'));
   });
 
   testWidgets('the capture paints a NabrilaMask as a solid block', (

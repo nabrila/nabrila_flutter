@@ -1,5 +1,5 @@
 {
-  "description": "Report status (close the loop) vectors. statusSecret = HKDF-SHA256(ikm = report key, salt = empty, info = \"nabrila-status-v1\", 32 bytes); statusHash = SHA-256(statusSecret), sent as X-Nabrila-Status: base64url(statusHash). Note = AES-256-GCM(report key, iv, aad = UTF-8 \"nabrila-status-v1:\" + reportId), stored as iv || ciphertext || tag. base64url without padding.",
+  "description": "Report status (close the loop) vectors. statusSecret = HKDF-SHA256(ikm = report key, salt = empty, info = \"nabrila-status-v1\", 32 bytes); statusHash = SHA-256(statusSecret), sent as X-Nabrila-Status: base64url(statusHash). Note = AES-256-GCM(report key, iv, aad = UTF-8 \"nabrila-status-v1:\" + reportId), stored as iv || ciphertext || tag. base64url without padding. Since 0030 the note's clear text is JSON {\"v\":1,\"text\"?,\"fixedIn\"?}; a note that is not that JSON reads as plain text.",
   "vectors": [
     {
       "name": "fixed_with_note",
@@ -17,6 +17,210 @@
         "status": "fixed",
         "note": "oKGio6Slpqeoqaqrv3lcXDCuZnzRX6ejdQ-lvBGMNXGywSce72flNRGLRC_mWHXfX73et57tJfeZnXjWpgf20a801uk"
       }
+    },
+    {
+      "name": "fixed_with_version",
+      "reportId": "Qk7nW2xY9pLmR4tVb8sZaA",
+      "keyHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "keyB64url": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+      "statusSecretB64url": "3q1KwyNfxutn6wT_4ZFzHbAGYr7AWx14xqNxKkhDlmU",
+      "statusHashB64url": "PzIgrwK1Sec0mEzirKwezP7lQ5TwxMw3w5LKoFFpe6I",
+      "note": "{\"v\":1,\"text\":\"Ya quedó: prueba la versión nueva 🍊\",\"fixedIn\":\"1.4.2+37\"}",
+      "noteText": "Ya quedó: prueba la versión nueva 🍊",
+      "fixedIn": "1.4.2+37",
+      "noteIvHex": "b0b1b2b3b4b5b6b7b8b9babb",
+      "noteAad": "nabrila-status-v1:Qk7nW2xY9pLmR4tVb8sZaA",
+      "sealedNoteB64url": "sLGys7S1tre4ubq74ncsidb8l30zne_W72eqm-UcOKdwSkyGZO7ygynnkHclJ0IaFbvUy8yYEyQc1_fQWww3N4S2yNJhqApZfP5EttzKBJY7klL0K_eRabx7xHdUFP-7tcyl4CdZYiu9rA"
     }
-  ]
+  ],
+  "verdict": {
+    "description": "The tester's own proof (D34). verdictSecret = 32 random bytes made on the phone for each report, kept only on the phone and never in the link; verdictHash = SHA-256(verdictSecret), sent with the upload as X-Nabrila-Verdict: base64url(verdictHash) without padding. The answer sends verdictSecret in base64url.",
+    "secretHex": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+    "secretB64url": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+    "hashB64url": "ctu3M2x2eAAj-D2kw1Xy7uqFczsT00d2l5F3kMEikIQ"
+  },
+  "fixedInCases": {
+    "description": "fixedIn: a pubspec version (1 to 4 numbers, optional +build) or a build number alone (37 or +37), at most 40 characters. Web (isFixedIn) and SDK (isFixedIn) must agree.",
+    "valid": [
+      "1",
+      "1.4",
+      "1.4.2",
+      "1.4.2+37",
+      "1.4.2.9",
+      "+37",
+      "37",
+      "999999.0.0+123456789"
+    ],
+    "invalid": [
+      "",
+      "v1.4",
+      "1.4.2-beta",
+      "1..2",
+      "1.4.2+",
+      "next",
+      "1.2.3.4.5",
+      "11111111111111111111111111111111111111111",
+      " 1.4.2",
+      "1.4.2 ",
+      "+",
+      "1.4.2+37+1",
+      "1234567.0"
+    ]
+  },
+  "hasVersionCases": {
+    "description": "Whether the installed app (PackageInfo version and build) already has fixedIn. null = unknown, and then the tester is not asked. A pre-release (1.4.2-beta) comes before its release.",
+    "cases": [
+      {
+        "fixedIn": "1.4.2",
+        "version": "1.4.2",
+        "build": "10",
+        "expected": true
+      },
+      {
+        "fixedIn": "1.4.2",
+        "version": "1.4.1",
+        "build": "99",
+        "expected": false
+      },
+      {
+        "fixedIn": "1.4.2",
+        "version": "1.5.0",
+        "build": "1",
+        "expected": true
+      },
+      {
+        "fixedIn": "1.4.2",
+        "version": "1.4",
+        "build": "1",
+        "expected": false
+      },
+      {
+        "fixedIn": "1.4",
+        "version": "1.4.0",
+        "build": "1",
+        "expected": true
+      },
+      {
+        "fixedIn": "1.4.2+37",
+        "version": "1.4.2",
+        "build": "36",
+        "expected": false
+      },
+      {
+        "fixedIn": "1.4.2+37",
+        "version": "1.4.2",
+        "build": "37",
+        "expected": true
+      },
+      {
+        "fixedIn": "1.4.2+37",
+        "version": "1.4.3",
+        "build": "1",
+        "expected": true
+      },
+      {
+        "fixedIn": "1.4.2+37",
+        "version": "1.4.2",
+        "build": "",
+        "expected": null
+      },
+      {
+        "fixedIn": "+37",
+        "version": "9.9.9",
+        "build": "37",
+        "expected": true
+      },
+      {
+        "fixedIn": "37",
+        "version": "9.9.9",
+        "build": "36",
+        "expected": false
+      },
+      {
+        "fixedIn": "37",
+        "version": "1.0.0",
+        "build": "abc",
+        "expected": null
+      },
+      {
+        "fixedIn": "1.4.2",
+        "version": "1.4.2-beta",
+        "build": "50",
+        "expected": false
+      },
+      {
+        "fixedIn": "1.4.2",
+        "version": "1.4.3-beta",
+        "build": "1",
+        "expected": true
+      },
+      {
+        "fixedIn": "1.4.2+37",
+        "version": "1.4.2-rc.1",
+        "build": "40",
+        "expected": false
+      },
+      {
+        "fixedIn": "1.4.2",
+        "version": "one.two",
+        "build": "1",
+        "expected": null
+      },
+      {
+        "fixedIn": "v1.4.2",
+        "version": "1.4.2",
+        "build": "1",
+        "expected": null
+      }
+    ]
+  },
+  "commitCases": {
+    "description": "app.commit: a git commit id of 7 to 40 hex characters, trimmed and lowercased; anything else is not sent (SDK commitOf) and not read (web parseManifest).",
+    "cases": [
+      {
+        "input": "0123abc",
+        "expected": "0123abc"
+      },
+      {
+        "input": "  0123ABCDEF  ",
+        "expected": "0123abcdef"
+      },
+      {
+        "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expected": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expected": null
+      },
+      {
+        "input": "012345",
+        "expected": null
+      },
+      {
+        "input": "",
+        "expected": null
+      },
+      {
+        "input": "-n1",
+        "expected": null
+      },
+      {
+        "input": "--output=/tmp/x",
+        "expected": null
+      },
+      {
+        "input": "HEAD",
+        "expected": null
+      },
+      {
+        "input": "0123abg",
+        "expected": null
+      },
+      {
+        "input": "0123abc\n",
+        "expected": "0123abc"
+      }
+    ]
+  }
 }

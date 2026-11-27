@@ -6,16 +6,32 @@ const int maxNoteLength = 1000;
 /// Version of this SDK, sent as `app.sdkVersion`.
 const String sdkVersion = '0.1.0';
 
+/// The git commit the build came from, set with
+/// `--dart-define=NABRILA_COMMIT=$(git rev-parse HEAD)`; empty when unset.
+const String buildCommit = String.fromEnvironment('NABRILA_COMMIT');
+
+final RegExp _commitRx = RegExp(r'^[0-9a-f]{7,40}$');
+
+/// [value] as a lowercase git commit id, or null when it is not one.
+String? commitOf(String value) {
+  final commit = value.trim().toLowerCase();
+  return _commitRx.hasMatch(commit) ? commit : null;
+}
+
 class AppInfo {
   const AppInfo({
     required this.appName,
     required this.appVersion,
     required this.buildNumber,
+    this.commit = '',
   });
 
   final String appName;
   final String appVersion;
   final String buildNumber;
+
+  /// The commit the build came from ([buildCommit]); sent only when valid.
+  final String commit;
 }
 
 class DeviceInfo {
@@ -106,6 +122,7 @@ Map<String, Object?> buildManifest({
       'buildNumber': clip(app.buildNumber, 40),
       'sdkVersion': sdkVersion,
       if (activeRoute != null) 'activeRoute': clip(activeRoute, 300),
+      'commit': ?commitOf(app.commit),
     },
     'device': {
       'platform': clip(device.platform, 40),

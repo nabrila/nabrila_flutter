@@ -1,12 +1,21 @@
+import 'package:flutter/cupertino.dart' show CupertinoTextField;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'events.dart' show clip;
 import 'mask.dart';
 
 const int _maxHintLength = 80;
-const int _maxAncestors = 14;
+
+/// Material 3 builds an `IconButton` about 60 levels above its glyph.
+const int _maxAncestors = 80;
 const int _maxTextDepth = 8;
+
+/// What a tap touched: a short text, and whether it landed inside a
+/// [NabrilaMask] (then there is never a hint, and the tap keeps no
+/// coordinates).
+typedef TapTarget = ({String? hint, bool masked});
 
 /// Works out what a tap touched, as a short text. Returns null when nothing
 /// useful can be said, and always null inside a [NabrilaMask]. For text fields
@@ -21,8 +30,15 @@ String? resolveTapHint(
   Element root,
   List<RenderObject> hitPath, {
   bool typeFallback = true,
+}) => resolveTap(root, hitPath, typeFallback: typeFallback).hint;
+
+/// [resolveTapHint], also telling whether the tap was inside a mask.
+TapTarget resolveTap(
+  Element root,
+  List<RenderObject> hitPath, {
+  bool typeFallback = true,
 }) {
-  if (hitPath.isEmpty) return null;
+  if (hitPath.isEmpty) return (hint: null, masked: false);
   final wanted = hitPath.toSet();
   final found = <RenderObject, Element>{};
   var masked = false;
@@ -31,7 +47,7 @@ String? resolveTapHint(
   void visit(Element element, bool inMask, bool inText) {
     final widget = element.widget;
     final mask = inMask || widget is NabrilaMask;
-    final text = inText || widget is EditableText || widget is TextField;
+    final text = inText || _isTextField(widget);
     final object = element.renderObject;
     if (element is RenderObjectElement && wanted.contains(object)) {
       found.putIfAbsent(object!, () => element);
@@ -42,38 +58,80 @@ String? resolveTapHint(
   }
 
   visit(root, false, false);
-  if (masked) return null;
-  if (textField) return 'TextField';
+  if (masked) return (hint: null, masked: true);
+  if (textField) return (hint: 'TextField', masked: false);
 
   for (final object in hitPath) {
     final element = found[object];
     if (element == null) continue;
     final hint = _hintFor(element, typeFallback);
-    if (hint != null) return _clip(hint);
+    if (hint != null) return (hint: clip(hint, _maxHintLength), masked: false);
   }
-  return null;
+  return (hint: null, masked: false);
 }
+
+bool _isTextField(Widget widget) =>
+    widget is EditableText ||
+    widget is TextField ||
+    widget is CupertinoTextField;
+
+/// Subtrees whose text never names a tap: masked content and what a person
+/// typed.
+bool _isProtected(Widget widget) =>
+    widget is NabrilaMask || _isTextField(widget);
 
 String? _hintFor(Element start, bool typeFallback) {
   String? label = _directLabel(start.widget);
   if (label != null) return label;
 
   String? fallback;
+  String? actionable;
   var steps = 0;
   start.visitAncestorElements((ancestor) {
     final widget = ancestor.widget;
     label = _directLabel(widget);
     if (label == null && _isActionable(widget)) {
-      label = _firstText(ancestor, 0);
+      label = firstText(ancestor);
+      // `IconButton` says more than the `RawGestureDetector` inside it.
+      if (actionable == null &&
+          _isNamedWidget(widget) &&
+          !_isPlumbing(widget)) {
+        actionable = _typeName(widget);
+      }
     }
-    if (label == null && fallback == null && _isNamedWidget(widget)) {
-      fallback = widget.runtimeType.toString();
+    if (label == null &&
+        fallback == null &&
+        _isNamedWidget(widget) &&
+        !_isPlumbing(widget)) {
+      fallback = _typeName(widget);
     }
     steps++;
-    return label == null && steps < _maxAncestors;
+    return label == null && actionable == null && steps < _maxAncestors;
   });
   if (label != null || !typeFallback) return label;
-  return fallback ?? start.widget.runtimeType.toString();
+  return actionable ?? fallback ?? _typeName(start.widget);
+}
+
+/// Widgets every button is built from: their names tell nothing.
+bool _isPlumbing(Widget widget) =>
+    widget is InkResponse ||
+    widget is GestureDetector ||
+    widget is RawGestureDetector ||
+    widget is Listener ||
+    widget is MouseRegion ||
+    widget is Semantics ||
+    widget is Focus ||
+    widget is Actions ||
+    widget is Shortcuts ||
+    widget is DefaultTextStyle ||
+    widget is IconTheme ||
+    widget is Material;
+
+/// `Foo<Bar>` → `Foo`.
+String _typeName(Widget widget) {
+  final name = widget.runtimeType.toString();
+  final generic = name.indexOf('<');
+  return generic > 0 ? name.substring(0, generic) : name;
 }
 
 bool _isActionable(Widget widget) =>
@@ -115,19 +173,20 @@ final RegExp _privateUse = RegExp(
   unicode: true,
 );
 
-String? _firstText(Element element, int depth) {
-  if (depth > _maxTextDepth) return null;
+/// The first visible text under [element], never inside a [NabrilaMask]
+/// or a text field: a button with a masked card number in it is named by
+/// its other text, or not at all.
+@visibleForTesting
+String? firstText(Element element, [int depth = 0]) {
+  if (depth > _maxTextDepth || _isProtected(element.widget)) return null;
   final own = _directLabel(element.widget);
   if (own != null) return own;
   String? result;
   element.visitChildElements((child) {
-    result ??= _firstText(child, depth + 1);
+    result ??= firstText(child, depth + 1);
   });
   return result;
 }
-
-String _clip(String value) =>
-    value.length > _maxHintLength ? value.substring(0, _maxHintLength) : value;
 
 /// Hit-tests [position] (in the root coordinate space) and returns the render
 /// objects under it, deepest first.

@@ -45,6 +45,19 @@ public class NabrilaPlugin: NSObject, FlutterPlugin {
       }
       return
     }
+    if call.method == "copySensitive" {
+      // A link with the report key: kept off the person's other devices
+      // (no Universal Clipboard).
+      guard let text = (call.arguments as? [String: Any])?["text"] as? String else {
+        return reply(false)
+      }
+      DispatchQueue.main.async {
+        UIPasteboard.general.setItems(
+          [["public.utf8-plain-text": text]], options: [.localOnly: true])
+        result(true)
+      }
+      return
+    }
     if call.method == "beginBackground" {
       // Asks iOS for time to finish an upload if the tester leaves the app
       // right after tapping Send; without it the app is frozen in seconds

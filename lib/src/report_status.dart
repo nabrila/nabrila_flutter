@@ -1,84 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import 'loop_store.dart';
+import 'status_crypto.dart';
+import 'status_model.dart';
 import 'uploader.dart';
+import 'verdict_post.dart';
+import 'version.dart';
 
-/// Header of the upload that carries [statusHashOf] the report key.
-const String statusHashHeader = 'X-Nabrila-Status';
+export 'status_crypto.dart';
+export 'status_model.dart';
+export 'version.dart';
 
-const String _info = 'nabrila-status-v1';
-
-/// `HKDF-SHA256(key, salt: empty, info: "nabrila-status-v1")`: whoever
-/// holds the link can derive it and prove it to the server to set the
-/// report's status; the server only keeps its hash.
-Future<Uint8List> statusSecretOf(List<int> key) async {
-  final derived = await Hkdf(hmac: Hmac.sha256(), outputLength: 32).deriveKey(
-    secretKey: SecretKey(key),
-    nonce: const [],
-    info: utf8.encode(_info),
-  );
-  return Uint8List.fromList(await derived.extractBytes());
-}
-
-/// `base64url(SHA-256(statusSecret))`, sent with the upload.
-Future<String> statusHashOf(List<int> key) async {
-  final hash = await Sha256().hash(await statusSecretOf(key));
-  return base64UrlNoPad(hash.bytes);
-}
-
-String base64UrlNoPad(List<int> bytes) =>
-    base64Url.encode(bytes).replaceAll('=', '');
-
-Uint8List _fromBase64Url(String value) =>
-    base64Url.decode(base64Url.normalize(value));
-
-/// Opens the team's note to the tester: `iv(12) || ciphertext || tag(16)`,
-/// AES-256-GCM with the report key and `"nabrila-status-v1:" + id` as AAD.
-/// Null when it does not open.
-Future<String?> openStatusNote(List<int> key, String id, String sealed) async {
-  try {
-    final bytes = _fromBase64Url(sealed);
-    if (bytes.length < 12 + 16 + 1) return null;
-    final box = SecretBox(
-      bytes.sublist(12, bytes.length - 16),
-      nonce: bytes.sublist(0, 12),
-      mac: Mac(bytes.sublist(bytes.length - 16)),
-    );
-    final clear = await AesGcm.with256bits().decrypt(
-      box,
-      secretKey: SecretKey(key),
-      aad: utf8.encode('$_info:$id'),
-    );
-    return utf8.decode(clear);
-  } on Object {
-    return null;
-  }
-}
-
-/// What the team said about a report the tester sent.
-class ReportStatus {
-  const ReportStatus({
-    required this.id,
-    required this.status,
-    this.note,
-    this.updatedAt,
-  });
-
-  final String id;
-
-  /// `fixed`, `needs_info` or `wont_fix` (`open` is never shown).
-  final String status;
-
-  /// The team's note, decrypted on the phone.
-  final String? note;
-  final String? updatedAt;
-
-  String get _mark => '$status|$updatedAt';
-}
+/// The team's answers the tester sees; `verified` and `reopened` are theirs.
+const Set<String> _teamStatuses = {'fixed', 'needs_info', 'wont_fix'};
 
 /// Remembers the reports this phone sent and asks the server, now and
 /// then, whether the team changed their status. The server answers only
@@ -89,59 +27,36 @@ class ReportLoop {
     required this.client,
     required Future<Directory?> Function() storageDir,
     DateTime Function()? clock,
-  }) : _storageDir = storageDir,
-       _clock = clock ?? DateTime.now;
+    Future<AppVersion?> Function()? appVersion,
+  }) : _clock = clock ?? DateTime.now,
+       _appVersion = appVersion ?? (() async => null) {
+    _store = LoopStore(storageDir: storageDir, clock: _clock);
+  }
 
   final http.Client client;
-  final Future<Directory?> Function() _storageDir;
   final DateTime Function() _clock;
+  late final LoopStore _store;
+
+  /// The app as it runs now, to know whether it has the fixing version.
+  final Future<AppVersion?> Function() _appVersion;
 
   /// Changes not seen yet; the scope shows the first one.
   final ValueNotifier<List<ReportStatus>> updates = ValueNotifier(const []);
 
+  /// Reports whose answer is on its way or could not go out yet; the banner
+  /// shows it. A report that is not here has nothing pending to show.
+  final ValueNotifier<Map<String, AnswerState>> answering = ValueNotifier(
+    const {},
+  );
+
+  /// Reports with an answer being sent right now, so a poll does not send
+  /// the same one at the same time.
+  final Set<String> _inFlight = {};
+
   /// Shortest time between two automatic checks.
   static const Duration every = Duration(minutes: 15);
-  static const int maxReports = 50;
-  static const Duration maxAge = Duration(days: 31);
-
-  Future<void> _last = Future.value();
-
-  Future<T> _serial<T>(Future<T> Function() work) {
-    final run = _last.then((_) => work());
-    _last = run.then<void>((_) {}, onError: (_) {});
-    return run;
-  }
-
-  Future<File?> _file() async {
-    final dir = await _storageDir();
-    return dir == null ? null : File('${dir.path}/loop/sent.json');
-  }
-
-  Future<Map<String, Object?>> _read(File file) async {
-    try {
-      return (jsonDecode(await file.readAsString()) as Map)
-          .cast<String, Object?>();
-    } on Object {
-      return {};
-    }
-  }
-
-  Future<void> _write(File file, Map<String, Object?> state) async {
-    await file.parent.create(recursive: true);
-    final tmp = File('${file.path}.tmp');
-    await tmp.writeAsString(jsonEncode(state), flush: true);
-    await tmp.rename(file.path);
-  }
-
-  Map<String, Map<String, Object?>> _reports(Map<String, Object?> state) {
-    final raw = state['reports'];
-    if (raw is! Map) return {};
-    return {
-      for (final e in raw.entries)
-        if (e.value is Map)
-          '${e.key}': (e.value as Map).cast<String, Object?>(),
-    };
-  }
+  static const int maxReports = LoopStore.maxReports;
+  static const Duration maxAge = LoopStore.maxAge;
 
   /// Keeps a sent report so its status can be asked for later.
   Future<void> remember({
@@ -150,53 +65,41 @@ class ReportLoop {
     required String endpoint,
     required String appKey,
     String? expiresAt,
-  }) => _serial(() async {
-    final file = await _file();
-    if (file == null) return;
-    final state = await _read(file);
-    final reports = _reports(state)
-      ..[id] = {
-        'key': base64Encode(key),
-        'endpoint': endpoint,
-        'appKey': appKey,
-        'sentAt': _clock().toUtc().toIso8601String(),
-        'expiresAt': expiresAt,
-      };
-    state['reports'] = _prune(reports);
-    await _write(file, state);
-  });
+    List<int>? verdictSecret,
+  }) => _store.remember(
+    id: id,
+    key: key,
+    endpoint: endpoint,
+    appKey: appKey,
+    expiresAt: expiresAt,
+    verdictSecret: verdictSecret,
+  );
 
-  Map<String, Map<String, Object?>> _prune(
-    Map<String, Map<String, Object?>> reports,
-  ) {
-    final now = _clock().toUtc();
-    final alive =
-        reports.entries.where((e) {
-          final sent = DateTime.tryParse('${e.value['sentAt']}');
-          final expires = DateTime.tryParse('${e.value['expiresAt']}');
-          if (sent == null || now.difference(sent).abs() > maxAge) return false;
-          return expires == null || expires.isAfter(now);
-        }).toList()..sort(
-          (a, b) => '${b.value['sentAt']}'.compareTo('${a.value['sentAt']}'),
-        );
-    return Map.fromEntries(alive.take(maxReports));
-  }
-
-  /// Asks for the status of every remembered report, at most once every
-  /// [every] unless [force]. Never throws.
-  Future<void> poll({bool force = false}) => _serial(() async {
+  /// Sends the answers still pending, then asks for the status of every
+  /// remembered report, at most once every [every] unless [force]. Never
+  /// throws.
+  Future<void> poll({bool force = false}) => _store.serial(() async {
     try {
-      final file = await _file();
+      final file = await _store.file();
       if (file == null || !await file.exists()) return;
-      final state = await _read(file);
+      final state = await _store.read(file);
       final now = _clock().toUtc();
+      final reports = _store.prune(_store.reports(state));
+      // A pending answer goes out on every poll, whatever the 15 minutes.
+      await _retryVerdicts(reports);
+      state['reports'] = reports;
       final last = DateTime.tryParse('${state['polledAt']}');
-      if (!force && last != null && now.difference(last).abs() < every) return;
-      final reports = _prune(_reports(state));
-      state
-        ..['reports'] = reports
-        ..['polledAt'] = now.toIso8601String();
-      await _write(file, state);
+      // A new version of the app may be the one with a fix: ask right away.
+      final app = await _appVersion();
+      final appMark = app == null ? null : '${app.version}+${app.build}';
+      final updated = appMark != null && appMark != state['polledApp'];
+      if (!force &&
+          !updated &&
+          last != null &&
+          now.difference(last).abs() < every) {
+        await _store.write(file, state);
+        return;
+      }
       final groups = <String, List<String>>{};
       for (final e in reports.entries) {
         groups
@@ -207,20 +110,64 @@ class ReportLoop {
             .add(e.key);
       }
       final found = <ReportStatus>[];
+      var answered = false;
       for (final group in groups.entries) {
         final [endpoint, appKey] = group.key.split('\n');
-        found.addAll(await _ask(endpoint, appKey, group.value, reports));
+        try {
+          final list = await _ask(endpoint, appKey, group.value, reports);
+          if (list == null) continue;
+          answered = true;
+          found.addAll(list);
+        } on Object catch (e) {
+          // One failing server never stops the others.
+          debugPrint('nabrila: could not check report status: $e');
+        }
       }
-      final fresh = [
-        for (final s in found)
-          if (s.status != 'open' && reports[s.id]?['seen'] != s._mark) s,
-      ];
+      // Only an answer counts as a check: offline, the app update is still
+      // to be asked about when the network comes back.
+      if (answered) {
+        state
+          ..['polledAt'] = now.toIso8601String()
+          ..['polledApp'] = appMark;
+      }
+      await _store.write(file, state);
+      final fresh = <ReportStatus>[];
+      for (final s in found) {
+        if (!_teamStatuses.contains(s.status)) continue;
+        final entry = reports[s.id];
+        final fixedIn = s.fixedIn;
+        if (s.status == 'fixed' &&
+            fixedIn != null &&
+            s.updatedAt != null &&
+            app != null &&
+            entry?['verdictSecret'] is String &&
+            entry?['asked'] != s.mark &&
+            hasVersion(
+                  fixedIn: fixedIn,
+                  version: app.version,
+                  build: app.build,
+                ) ==
+                true) {
+          fresh.add(
+            ReportStatus(
+              id: s.id,
+              status: s.status,
+              note: s.note,
+              fixedIn: fixedIn,
+              updatedAt: s.updatedAt,
+              askVerdict: true,
+            ),
+          );
+        } else if (entry?['seen'] != s.mark) {
+          fresh.add(s);
+        }
+      }
       if (fresh.isNotEmpty) {
-        final known = {for (final u in updates.value) u._mark + u.id};
+        final known = {for (final u in updates.value) u.mark + u.id};
         updates.value = [
           ...updates.value,
           for (final s in fresh)
-            if (!known.contains(s._mark + s.id)) s,
+            if (!known.contains(s.mark + s.id)) s,
         ];
       }
     } on Object catch (e) {
@@ -228,7 +175,57 @@ class ReportLoop {
     }
   });
 
-  Future<List<ReportStatus>> _ask(
+  /// Tries again every answer saved as pending in [reports] (changing it);
+  /// the caller writes it down.
+  Future<void> _retryVerdicts(Map<String, Map<String, Object?>> reports) async {
+    for (final e in reports.entries) {
+      final pending = e.value['pendingVerdict'];
+      if (pending is! Map || _inFlight.contains(e.key)) continue;
+      final askedAt = '${pending['askedAt']}';
+      final outcome = await postVerdict(client, e.key, e.value, pending);
+      if (outcome == VerdictOutcome.retry) {
+        _showAnswer(e.key, askedAt, AnswerState.failed);
+      } else {
+        _settle(e.value, e.key, askedAt, outcome == VerdictOutcome.done);
+      }
+    }
+  }
+
+  /// The answer is over, taken or refused for good: forget it and close its
+  /// question.
+  void _settle(
+    Map<String, Object?> entry,
+    String id,
+    String askedAt,
+    bool taken,
+  ) {
+    final pending = entry.remove('pendingVerdict');
+    if (taken && pending is Map) entry['verdict'] = pending['status'];
+    // The question is over: the same `fixed` is not shown again.
+    entry['seen'] = 'fixed|$askedAt';
+    _showAnswer(id, askedAt, null);
+    updates.value = updates.value
+        .where((u) => !(u.id == id && u.updatedAt == askedAt))
+        .toList();
+  }
+
+  /// Marks the question of [id] as sending or failed in the banner (null
+  /// clears it), only while that very question is still shown.
+  void _showAnswer(String id, String askedAt, AnswerState? state) {
+    final shown = updates.value.any(
+      (u) => u.id == id && u.updatedAt == askedAt,
+    );
+    final next = {...answering.value};
+    if (state == null || !shown) {
+      next.remove(id);
+    } else {
+      next[id] = state;
+    }
+    answering.value = next;
+  }
+
+  /// Null when the server did not answer 200.
+  Future<List<ReportStatus>?> _ask(
     String endpoint,
     String appKey,
     List<String> ids,
@@ -241,7 +238,7 @@ class ReportLoop {
       appKey,
       {'ids': ids.take(maxReports).toList()},
     );
-    if (response.statusCode != 200) return const [];
+    if (response.statusCode != 200) return null;
     final json = jsonDecode(utf8.decode(response.bodyBytes));
     final list = json is Map ? json['reports'] : null;
     if (list is! List) return const [];
@@ -252,14 +249,16 @@ class ReportLoop {
       final entry = reports[id];
       if (id is! String || status is! String || entry == null) continue;
       final sealed = item['note'];
-      final note = sealed is String
+      final plain = sealed is String
           ? await openStatusNote(base64Decode('${entry['key']}'), id, sealed)
           : null;
+      final note = plain == null ? null : StatusNote.decode(plain);
       out.add(
         ReportStatus(
           id: id,
           status: status,
-          note: note,
+          note: note?.text,
+          fixedIn: note?.fixedIn,
           updatedAt: item['updatedAt'] as String?,
         ),
       );
@@ -267,24 +266,73 @@ class ReportLoop {
     return out;
   }
 
-  /// The tester saw [update]: it is not shown again unless it changes.
+  /// The tester saw [update]: it is not shown again unless it changes. A
+  /// question closed without an answer is not asked again either.
   Future<void> seen(ReportStatus update) async {
     updates.value = updates.value.where((u) => u != update).toList();
-    await _serial(() async {
-      final file = await _file();
-      if (file == null || !await file.exists()) return;
-      final state = await _read(file);
-      final reports = _reports(state);
-      reports[update.id]?['seen'] = update._mark;
-      state['reports'] = reports;
-      await _write(file, state);
+    await _store.mark(update.id, {
+      'seen': update.mark,
+      if (update.askVerdict) 'asked': update.mark,
     });
   }
 
+  /// The tester answers whether the fix works: `verified` or `reopened`,
+  /// proved with the verdict secret that was made on this phone for that
+  /// report and never left it. The answer is saved before it is sent and
+  /// goes out again on every [poll] until the server takes it (`200`) or
+  /// refuses it for good (`403`, `404`, `409`).
+  ///
+  /// True when the question is closed: the server took the answer or will
+  /// never take it. False when it could not be sent yet (the answer stays
+  /// pending and is retried) or this phone cannot answer that report.
+  Future<bool> answer(ReportStatus update, {required bool works}) async {
+    final id = update.id;
+    final askedAt = update.updatedAt;
+    if (_inFlight.contains(id)) return false;
+    final status = works ? 'verified' : 'reopened';
+    final entry = askedAt == null
+        ? null
+        : await _store.edit((all) {
+            final entry = all[id];
+            if (entry == null || entry['verdictSecret'] is! String) return null;
+            return entry
+              ..['pendingVerdict'] = {'status': status, 'askedAt': askedAt}
+              ..['asked'] = update.mark;
+          });
+    if (entry == null || askedAt == null) {
+      // A report this phone cannot answer: the question just goes away.
+      updates.value = updates.value.where((u) => u != update).toList();
+      return false;
+    }
+    _inFlight.add(id);
+    try {
+      _showAnswer(id, askedAt, AnswerState.sending);
+      final outcome = await postVerdict(client, id, entry, {
+        'status': status,
+        'askedAt': askedAt,
+      });
+      if (outcome == VerdictOutcome.retry) {
+        _showAnswer(id, askedAt, AnswerState.failed);
+        return false;
+      }
+      await _store.edit((all) {
+        final saved = all[id];
+        if (saved != null) {
+          _settle(saved, id, askedAt, outcome == VerdictOutcome.done);
+        }
+      });
+      // The report was forgotten meanwhile: close the question anyway.
+      _settle({}, id, askedAt, false);
+      return true;
+    } finally {
+      _inFlight.remove(id);
+    }
+  }
+
   /// Forgets every sent report.
-  Future<void> clear() => _serial(() async {
+  Future<void> clear() async {
     updates.value = const [];
-    final file = await _file();
-    if (file != null && await file.exists()) await file.delete();
-  });
+    answering.value = const {};
+    await _store.delete();
+  }
 }

@@ -1,0 +1,35 @@
+# Copied from the Nabrila monorepo by scripts/sync-mirror.mjs; edit it there, not here.
+name: Publish to pub.dev
+
+# A tag such as v0.1.1 publishes that version with the OIDC token GitHub issues to this run: no
+# pub.dev credential is stored anywhere (OPS-08). pub.dev accepts it only once the package admin
+# enables automated publishing for this repository, this tag pattern and the pub.dev environment.
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+*']
+
+permissions: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pub.dev
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: The tag names the version in pubspec.yaml
+        run: |
+          test "v$(sed -n 's/^version: *//p' pubspec.yaml)" = "$GITHUB_REF_NAME"
+      # Asks GitHub for the OIDC token and hands it to `dart pub`, which Flutter's Dart uses too.
+      - uses: dart-lang/setup-dart@2286a0c042b44434fe26d292bbce8d34f7ec662b # v1.8.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - run: dart pub publish --force

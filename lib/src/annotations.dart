@@ -123,3 +123,32 @@ Future<Uint8List?> composeAnnotated(
   }
   return bytes;
 }
+
+/// The drawings could not be put on the screenshot. The report is not sent:
+/// without them the boxes that hide what the tester chose to hide would be
+/// missing too.
+class AnnotationsLostException implements Exception {
+  @override
+  String toString() => 'AnnotationsLostException';
+}
+
+/// The PNG to send: [png] as captured when there are no [annotations],
+/// otherwise [base] with them drawn on. Never falls back to the bare
+/// capture when drawing fails; it throws [AnnotationsLostException].
+Future<Uint8List> screenshotToSend(
+  ui.Image base,
+  Uint8List png,
+  List<Annotation> annotations, {
+  Future<Uint8List?> Function(ui.Image, List<Annotation>) compose =
+      composeAnnotated,
+}) async {
+  if (annotations.isEmpty) return png;
+  final Uint8List? drawn;
+  try {
+    drawn = await compose(base, annotations);
+  } on Object {
+    throw AnnotationsLostException();
+  }
+  if (drawn == null) throw AnnotationsLostException();
+  return drawn;
+}

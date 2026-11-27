@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'annotation_canvas.dart';
 import 'annotations.dart';
 import 'capture.dart';
+import 'clipboard.dart';
 import 'element_locator.dart';
 import 'envelope.dart';
 import 'l10n.dart';
@@ -108,6 +108,9 @@ class _CaptureFlowState extends State<_CaptureFlow> {
   bool _saved = false;
   bool _copied = false;
 
+  /// The drawings could not go on the screenshot; nothing was sent.
+  bool _drawingLost = false;
+
   NabrilaStrings get s => widget.strings;
 
   @override
@@ -146,16 +149,23 @@ class _CaptureFlowState extends State<_CaptureFlow> {
       });
     } on EnvelopeTooLargeException {
       _fail(UploadFailure.tooLarge);
+    } on AnnotationsLostException {
+      if (!mounted) return;
+      setState(() {
+        _drawingLost = true;
+        _phase = _Phase.failed;
+      });
     } on Object {
       _fail(UploadFailure.server);
     }
   }
 
   Future<SealedReport> _seal() async {
-    final png = _annotations.isEmpty
-        ? widget.capture.png
-        : await composeAnnotated(widget.capture.image, _annotations) ??
-              widget.capture.png;
+    final png = await screenshotToSend(
+      widget.capture.image,
+      widget.capture.png,
+      _annotations,
+    );
     return sealReport(
       manifest: widget.buildManifest(
         ReportInput(note: _note.text, kind: _kind, element: _pointed?.toJson()),
@@ -179,6 +189,7 @@ class _CaptureFlowState extends State<_CaptureFlow> {
     UploadFailure.suspended => s.errSuspended,
     UploadFailure.tooLarge => s.errTooLarge,
     UploadFailure.quota => s.errQuota,
+    UploadFailure.planLimit => s.errPlanLimit,
     UploadFailure.rateLimited => s.errRateLimited,
     UploadFailure.badEnvelope => s.errBadEnvelope,
     UploadFailure.network => s.errNetwork,
@@ -195,9 +206,18 @@ class _CaptureFlowState extends State<_CaptureFlow> {
   }
 
   Future<void> _copy(String link) async {
-    await Clipboard.setData(ClipboardData(text: link));
+    await copySecret(link);
     if (mounted) setState(() => _copied = true);
   }
+
+  /// Back to the editor after a failure that sending again cannot fix:
+  /// the next send seals a new report.
+  void _editAgain() => setState(() {
+    _sealed = null;
+    _failure = null;
+    _drawingLost = false;
+    _phase = _Phase.editing;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -362,7 +382,8 @@ class _CaptureFlowState extends State<_CaptureFlow> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            SelectableText(result.link),
+            // The key is copied or shared, never shown whole.
+            Text(maskedLink(result.link)),
             const SizedBox(height: 12),
             Text(s.linkWarning, style: Theme.of(context).textTheme.bodySmall),
             if (result.keyCustodyFailed) ...[
@@ -394,8 +415,11 @@ class _CaptureFlowState extends State<_CaptureFlow> {
 
   Widget _failedView() {
     final failure = _failure ?? UploadFailure.server;
+    final editAgain = _drawingLost || failure == UploadFailure.tooLarge;
     final canRetry =
+        !editAgain &&
         failure != UploadFailure.quota &&
+        failure != UploadFailure.planLimit &&
         failure != UploadFailure.suspended &&
         failure != UploadFailure.invalidKey;
     return Center(
@@ -404,7 +428,10 @@ class _CaptureFlowState extends State<_CaptureFlow> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_failureText(failure), textAlign: TextAlign.center),
+            Text(
+              _drawingLost ? s.errDrawing : _failureText(failure),
+              textAlign: TextAlign.center,
+            ),
             if (_saved) ...[
               const SizedBox(height: 12),
               Text(
@@ -415,6 +442,8 @@ class _CaptureFlowState extends State<_CaptureFlow> {
             ],
             const SizedBox(height: 16),
             if (canRetry) FilledButton(onPressed: _send, child: Text(s.retry)),
+            if (editAgain)
+              FilledButton(onPressed: _editAgain, child: Text(s.editAgain)),
             TextButton(onPressed: widget.onClose, child: Text(s.close)),
           ],
         ),
