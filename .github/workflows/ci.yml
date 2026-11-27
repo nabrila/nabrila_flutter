@@ -12,6 +12,12 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest Flutter the SDK supports (pubspec.yaml) and the current stable, which is
+        # what pub.dev scores with. Both are raised on purpose, never by a new release.
+        flutter-version: ['3.47.6', '3.50.1']
     steps:
       # Actions pinned by commit SHA (tag in the comment) so a moved tag cannot change what runs.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -20,10 +26,13 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
-          # The version the SDK is tested with. Raised on purpose, never by a new stable: 3.50
-          # deprecates package:flutter/material.dart, and `flutter analyze` fails on that.
-          flutter-version: 3.47.6
+          flutter-version: ${{ matrix.flutter-version }}
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
       - run: dart pub publish --dry-run
+      # The same analysis pub.dev runs: fails on any lost pub point.
+      - if: matrix.flutter-version == '3.50.1'
+        run: |
+          dart pub global activate pana 0.23.19
+          dart pub global run pana --no-warning --exit-code-threshold 0 .

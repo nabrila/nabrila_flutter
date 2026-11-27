@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart' show CupertinoTextField;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
+import 'design_widgets.dart';
 import 'events.dart' show clip;
 import 'mask.dart';
 
@@ -47,7 +47,7 @@ TapTarget resolveTap(
   void visit(Element element, bool inMask, bool inText) {
     final widget = element.widget;
     final mask = inMask || widget is NabrilaMask;
-    final text = inText || _isTextField(widget);
+    final text = inText || isTextField(widget);
     final object = element.renderObject;
     if (element is RenderObjectElement && wanted.contains(object)) {
       found.putIfAbsent(object!, () => element);
@@ -70,15 +70,10 @@ TapTarget resolveTap(
   return (hint: null, masked: false);
 }
 
-bool _isTextField(Widget widget) =>
-    widget is EditableText ||
-    widget is TextField ||
-    widget is CupertinoTextField;
-
 /// Subtrees whose text never names a tap: masked content and what a person
 /// typed.
 bool _isProtected(Widget widget) =>
-    widget is NabrilaMask || _isTextField(widget);
+    widget is NabrilaMask || isTextField(widget);
 
 String? _hintFor(Element start, bool typeFallback) {
   String? label = _directLabel(start.widget);
@@ -114,7 +109,7 @@ String? _hintFor(Element start, bool typeFallback) {
 
 /// Widgets every button is built from: their names tell nothing.
 bool _isPlumbing(Widget widget) =>
-    widget is InkResponse ||
+    isMaterialPlumbing(widget) ||
     widget is GestureDetector ||
     widget is RawGestureDetector ||
     widget is Listener ||
@@ -124,8 +119,7 @@ bool _isPlumbing(Widget widget) =>
     widget is Actions ||
     widget is Shortcuts ||
     widget is DefaultTextStyle ||
-    widget is IconTheme ||
-    widget is Material;
+    widget is IconTheme;
 
 /// `Foo<Bar>` → `Foo`.
 String _typeName(Widget widget) {
@@ -134,16 +128,7 @@ String _typeName(Widget widget) {
   return generic > 0 ? name.substring(0, generic) : name;
 }
 
-bool _isActionable(Widget widget) =>
-    widget is ButtonStyleButton ||
-    widget is IconButton ||
-    widget is FloatingActionButton ||
-    widget is ListTile ||
-    widget is Chip ||
-    widget is Tab ||
-    widget is BottomNavigationBar ||
-    widget is NavigationDestination ||
-    widget is InkResponse;
+bool _isActionable(Widget widget) => isMaterialTapTarget(widget);
 
 bool _isNamedWidget(Widget widget) =>
     (widget is StatelessWidget || widget is StatefulWidget) &&
@@ -157,8 +142,8 @@ String? _directLabel(Widget widget) {
     value = widget.data ?? widget.textSpan?.toPlainText();
   } else if (widget is RichText) {
     value = widget.text.toPlainText();
-  } else if (widget is Tooltip) {
-    value = widget.message;
+  } else if (tooltipMessage(widget) case final message?) {
+    value = message;
   } else if (widget is Icon) {
     value = widget.semanticLabel;
   }

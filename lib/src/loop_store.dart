@@ -7,11 +7,7 @@ import 'status_crypto.dart';
 /// verdict secret and the marks of what the tester already saw or answered.
 /// Every read-modify-write runs one at a time.
 class LoopStore {
-  LoopStore({
-    required Future<Directory?> Function() storageDir,
-    required DateTime Function() clock,
-  }) : _storageDir = storageDir,
-       _clock = clock;
+  LoopStore({required this._storageDir, required this._clock});
 
   final Future<Directory?> Function() _storageDir;
   final DateTime Function() _clock;

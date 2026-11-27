@@ -158,7 +158,8 @@ location or contacts. For the Google Play and App Store forms, see
 | Desktop | Yes; the replay is kept as pictures, with no video |
 | Web | No (the SDK uses `dart:io`) |
 
-Flutter 3.35 or newer (Dart 3.9).
+Flutter 3.47 or newer (Dart 3.13). It works the same whether your app uses
+`material_ui` or the Material library bundled with Flutter.
 
 ## Limits
 

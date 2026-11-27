@@ -515,9 +515,8 @@ void main() {
         appKey: 'nbr_test',
         endpoint: 'https://nabrila.com',
       );
-      File(
-        '${dir.path}/${garbled.name}.json',
-      ).writeAsBytesSync([0xff, 0xfe, 0]);
+      File('${dir.path}/${garbled.name}.json')
+          .writeAsBytesSync([0xff, 0xfe, 0]);
       final state = File('${dir.path}/${locked.name}.json');
       // Unreadable, as files are on iOS before the first unlock.
       Process.runSync('chmod', ['000', state.path]);

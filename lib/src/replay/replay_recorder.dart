@@ -90,10 +90,9 @@ class ReplayStats {
 class ReplayRecorder with WidgetsBindingObserver {
   ReplayRecorder({
     this.options = const NabrilaReplay(),
-    ReplayCodec codec = const ReplayCodec(),
+    this._codec = const ReplayCodec(),
     DateTime Function()? clock,
-  }) : _codec = codec,
-       _clock = clock ?? DateTime.now;
+  }) : _clock = clock ?? DateTime.now;
 
   final NabrilaReplay options;
 
@@ -357,8 +356,8 @@ class ReplayTake {
     required this.frames,
     required this.origin,
     this.quality = 0.5,
-    ReplayCodec codec = const ReplayCodec(),
-  }) : _codec = codec;
+    this._codec = const ReplayCodec(),
+  });
 
   final List<ReplayFrame> frames;
   final DateTime origin;

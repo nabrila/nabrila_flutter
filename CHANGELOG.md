@@ -1,3 +1,11 @@
+## 0.2.0
+
+- Needs Flutter 3.47 or newer (Dart 3.13).
+- The SDK's own screens use `material_ui` instead of
+  `package:flutter/material.dart`, which Flutter 3.50 deprecates.
+- Taps and pointed elements are named the same whether the app uses
+  `material_ui` and `cupertino_ui` or the libraries bundled with Flutter.
+
 ## 0.1.0
 
 - `--dart-define=NABRILA_COMMIT=<sha>` adds the build's git commit to every

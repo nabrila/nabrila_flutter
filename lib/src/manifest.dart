@@ -4,7 +4,7 @@ import 'redaction.dart';
 const int maxNoteLength = 1000;
 
 /// Version of this SDK, sent as `app.sdkVersion`.
-const String sdkVersion = '0.1.0';
+const String sdkVersion = '0.2.0';
 
 /// The git commit the build came from, set with
 /// `--dart-define=NABRILA_COMMIT=$(git rev-parse HEAD)`; empty when unset.

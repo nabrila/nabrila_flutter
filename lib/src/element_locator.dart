@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
+import 'design_widgets.dart';
 import 'mask.dart';
 import 'tap_resolver.dart';
 
@@ -156,15 +157,7 @@ bool _isPublic(Widget widget) =>
     !widget.runtimeType.toString().startsWith('_');
 
 bool _isActionable(Widget widget) =>
-    widget is ButtonStyleButton ||
-    widget is IconButton ||
-    widget is FloatingActionButton ||
-    widget is ListTile ||
-    widget is Chip ||
-    widget is InkWell ||
-    widget is GestureDetector ||
-    widget is Switch ||
-    widget is Checkbox;
+    isMaterialControl(widget) || widget is GestureDetector;
 
 String _typeName(Widget widget) {
   final name = widget.runtimeType.toString();

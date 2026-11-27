@@ -119,7 +119,7 @@ void main() {
     expect(manifest['schemaVersion'], 1);
     expect(manifest['capturedAt'], '2026-11-26T12:00:00.000Z');
     expect((manifest['note'] as String).length, 1000);
-    expect((manifest['app'] as Map)['sdkVersion'], '0.1.0');
+    expect((manifest['app'] as Map)['sdkVersion'], sdkVersion);
     expect((manifest['app'] as Map)['activeRoute'], '/home');
     expect(manifest['events'], isEmpty);
   });

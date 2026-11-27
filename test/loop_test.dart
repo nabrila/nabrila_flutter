@@ -25,9 +25,9 @@ Future<Directory?> Function() _tempDir() {
 
 void main() {
   final vector =
-      (jsonDecode(File('test/vectors/status.json').readAsStringSync())
-                  as Map)['vectors']
-              .first
+      (jsonDecode(
+            File('test/vectors/status.json').readAsStringSync(),
+          ) as Map)['vectors'].first
           as Map;
   final key = _hex(vector['keyHex'] as String);
   final id = vector['reportId'] as String;
@@ -380,9 +380,9 @@ void main() {
     // Its own answer is never shown back, and nothing stays pending.
     await h.loop.poll(force: true);
     expect(h.loop.updates.value, isEmpty);
-    final saved =
-        jsonDecode(File('${h.dir().path}/loop/sent.json').readAsStringSync())
-            as Map;
+    final saved = jsonDecode(
+      File('${h.dir().path}/loop/sent.json').readAsStringSync(),
+    ) as Map;
     expect((saved['reports'] as Map)[id], isNot(contains('pendingVerdict')));
   });
 
@@ -396,9 +396,9 @@ void main() {
       expect(await h.loop.answer(ask, works: false), isFalse);
       expect(h.loop.answering.value[id], AnswerState.failed);
       expect(h.loop.updates.value.single, ask);
-      var saved =
-          jsonDecode(File('${h.dir().path}/loop/sent.json').readAsStringSync())
-              as Map;
+      var saved = jsonDecode(
+        File('${h.dir().path}/loop/sent.json').readAsStringSync(),
+      ) as Map;
       expect((saved['reports'] as Map)[id]['pendingVerdict'], {
         'status': 'reopened',
         'askedAt': '2026-11-27T10:00:00.123Z',
@@ -413,9 +413,9 @@ void main() {
       h.setOnline(false);
       h.posts.clear();
       await h.loop.poll();
-      saved =
-          jsonDecode(File('${h.dir().path}/loop/sent.json').readAsStringSync())
-              as Map;
+      saved = jsonDecode(
+        File('${h.dir().path}/loop/sent.json').readAsStringSync(),
+      ) as Map;
       expect((saved['reports'] as Map)[id], contains('pendingVerdict'));
 
       // Back online, even inside the 15 minutes: it goes out and is dropped.
@@ -423,9 +423,9 @@ void main() {
       h.answerWith(200);
       await h.loop.poll();
       expect(h.posts.single['status'], 'reopened');
-      saved =
-          jsonDecode(File('${h.dir().path}/loop/sent.json').readAsStringSync())
-              as Map;
+      saved = jsonDecode(
+        File('${h.dir().path}/loop/sent.json').readAsStringSync(),
+      ) as Map;
       expect((saved['reports'] as Map)[id], isNot(contains('pendingVerdict')));
       h.posts.clear();
       await h.loop.poll(force: true);

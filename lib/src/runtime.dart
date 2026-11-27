@@ -45,13 +45,12 @@ class NabrilaRuntime {
     String endpoint = defaultEndpoint,
     http.Client? client,
     DateTime Function()? clock,
-    Future<Directory?> Function()? storageDir,
+    this._storageDir,
     this.keepKeyOnDevice = false,
   }) : endpoint = _trimSlash(endpoint),
        client = client ?? sdkHttpClient(),
        _clock = clock ?? _MonotonicClock().now,
-       _wallClock = clock ?? DateTime.now,
-       _storageDir = storageDir;
+       _wallClock = clock ?? DateTime.now;
 
   /// The enabled runtime, or null while the SDK is off. Not exported.
   static NabrilaRuntime? current;

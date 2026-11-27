@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nabrila/nabrila.dart';
 import 'package:nabrila/src/envelope.dart';
 import 'package:nabrila/src/replay/replay_codec.dart';

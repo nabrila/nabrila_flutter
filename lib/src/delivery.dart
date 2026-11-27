@@ -208,9 +208,8 @@ class ReportDelivery {
       _drainAgain = true;
       return running;
     }
-    return _running = _inBackground(
-      _drainLoop,
-    ).whenComplete(() => _running = null);
+    return _running = _inBackground(_drainLoop)
+        .whenComplete(() => _running = null);
   }
 
   Future<void> _drainLoop() async {

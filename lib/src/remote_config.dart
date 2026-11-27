@@ -17,11 +17,10 @@ class RemoteConfig {
     required this.client,
     required this.endpoint,
     required this.appKey,
-    required Future<Directory?> Function() storageDir,
+    required this._storageDir,
     Future<String?> Function()? deviceModel,
     DateTime Function()? clock,
-  }) : _storageDir = storageDir,
-       _deviceModel = deviceModel ?? _nativeModel,
+  }) : _deviceModel = deviceModel ?? _nativeModel,
        _clock = clock ?? DateTime.now;
 
   final http.Client client;
@@ -118,9 +117,8 @@ class RemoteConfig {
 
   static Future<String?> _nativeModel() async {
     try {
-      return await const MethodChannel(
-        'nabrila/replay',
-      ).invokeMethod<String>('deviceModel');
+      return await const MethodChannel('nabrila/replay')
+          .invokeMethod<String>('deviceModel');
     } on Object {
       return null;
     }
