@@ -179,7 +179,13 @@ void main() {
     await tester.enterText(find.byType(TextField).last, 'The pay button hangs');
     await tester.runAsync(() async {
       await tester.tap(find.text('Send'));
-      for (var i = 0; i < 40 && requests.isEmpty; i++) {
+      // Waits for the screen, not for the request: the answer is read, stored in the outbox and
+      // shown a few turns after the request leaves, and a slow CI runner needs those turns.
+      for (
+        var i = 0;
+        i < 100 && find.text('Report ready').evaluate().isEmpty;
+        i++
+      ) {
         await tester.pump();
         await Future<void>.delayed(const Duration(milliseconds: 50));
       }
